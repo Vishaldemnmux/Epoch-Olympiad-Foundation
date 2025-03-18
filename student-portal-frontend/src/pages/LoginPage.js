@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
-
+import axios from "axios";
 
 const LoginPage = () => {
   const [batch, setBatch] = useState("2024-25");
@@ -10,7 +10,7 @@ const LoginPage = () => {
 
   const handleLogin = () => {
     console.log("Logging in with:", batch, mobile);
-    navigate("/dashboard");
+    navigate("/dashboard", { state: { mobile } }); 
   };
 
   return (
@@ -39,7 +39,8 @@ const LoginPage = () => {
         <button onClick={handleLogin}>Continue</button>
       </div>
     </div>
-  );
+  )
 };
+
 
 export default LoginPage;

@@ -1,41 +1,50 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaBars } from "react-icons/fa";
-import "../styles/Dashboard.css";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../styles/Dashboard.css"; 
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
+  const location = useLocation();
+  const mobile = location.state?.mobile || ""; 
+  const [student, setStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleResize = () => {
-    const mobile = window.innerWidth <= 768;
-    setIsMobile(mobile);
-    setIsSidebarOpen(!mobile);
-  };
-
+  // Fetch student details from API when component mounts
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    const fetchStudentDetails = async () => {
+      console.log(mobile);
+      if (!mobile) return;
+      try {
+        const response = await fetch("/get-student", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${mobile}`,
+          },
+        });
 
-  const student = {
-    name: "Rahul Sharma",
-    batch: "2023",
-    enrollmentId: "STU12345",
-    mobile: "9876543210",
-  };
+        if (!response.ok) {
+          console.log(response);
+          throw new Error("Failed to fetch student data");
+        }
+
+        const data = await response.json();
+        setStudent(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudentDetails();
+  }, []);
 
   return (
     <div className="dashboard-container">
-      {isMobile && (
-        <button className="toggle-button" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-          <FaBars />
-        </button>
-      )}
-
       {/* Sidebar */}
-      <aside className={`sidebar ${isSidebarOpen ? "open" : "collapsed"}`}>
+      <aside className="sidebar">
         <h3>Student Portal</h3>
         <ul>
           <li onClick={() => navigate("/admit-card")}>Admit Card</li>
@@ -50,12 +59,26 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="dashboard-content">
-        <h2>Welcome, {student.name}!</h2>
-        <div className="student-info">
-          <p><strong>Batch:</strong> {student.batch}</p>
-          <p><strong>Enrollment ID:</strong> {student.enrollmentId}</p>
-          <p><strong>Mobile:</strong> {student.mobile}</p>
-        </div>
+        {loading ? (
+          <p>Loading student details...</p>
+        ) : error ? (
+          <p style={{ color: "red" }}>Error: {error}</p>
+        ) : student ? (
+          <>
+            <h2>Welcome, {student["Student's name"]}!</h2>
+            <p><strong>Roll No:</strong> {student["Roll no"]}</p>
+            <p><strong>Class:</strong> {student["Class"]}</p>
+            <p><strong>Section:</strong> {student["Section"]}</p>
+            <p><strong>Father's Name:</strong> {student["Father's Name"]}</p>
+            <p><strong>Mother's Name:</strong> {student["Mother's Name"]}</p>
+            <p><strong>School:</strong> {student["School"]}</p>
+            <p><strong>School Code:</strong> {student["School Code"]}</p>
+            <p><strong>Mobile No:</strong> {student["Mob No"]}</p>
+            <p><strong>City:</strong> {student["City"]}</p>
+          </>
+        ) : (
+          <p>No student details found.</p>
+        )}
       </main>
     </div>
   );
