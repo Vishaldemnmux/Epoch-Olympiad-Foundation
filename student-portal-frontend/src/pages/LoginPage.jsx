@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/LoginPage.css";
-import axios from "axios";
+import { ChevronDown, ArrowRight } from "lucide-react";
+import mainLogo from "../assets/main_logo.png";
 
 const LoginPage = () => {
   const [batch, setBatch] = useState("2024-25");
@@ -10,37 +10,87 @@ const LoginPage = () => {
 
   const handleLogin = () => {
     console.log("Logging in with:", batch, mobile);
-    navigate("/dashboard", { state: { mobile } }); 
+    navigate("/dashboard", { state: { mobile } });
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <img src="/logo.png" alt="Logo" className="login-logo" /> {/* Add your logo here */}
-        <h2>LOGIN</h2>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Card Container */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-4 animate-fade-in">
+          {/* Logo Section */}
+          <div className="text-center space-y-2">
+            <div className="w-4h-44 h-44 rounded-2xl mx-auto flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
+              <img
+                src={mainLogo}
+                alt="Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            
+          </div>
 
-        <div className="input-group">
-          <select value={batch} onChange={(e) => setBatch(e.target.value)}>
-            <option value="2025-26">2025-26</option>
-            <option value="2024-25">2024-25</option>
-            <option value="2023-24">2023-24</option>
-          </select>
+          {/* Form Section */}
+          <div className="space-y-4">
+            {/* Batch Select */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700 block">
+                Select Batch
+              </label>
+              <div className="relative">
+                <select
+                  value={batch}
+                  onChange={(e) => setBatch(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none transition-all duration-300 bg-white pr-10"
+                >
+                  <option value="2025-26">2025-26</option>
+                  <option value="2024-25">2024-25</option>
+                  <option value="2023-24">2023-24</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none w-5 h-5" />
+              </div>
+            </div>
+
+            {/* Mobile Input */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700 block">
+                Mobile Number
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your mobile number"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
+              />
+            </div>
+
+            {/* Login Button */}
+            <button
+              onClick={handleLogin}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg px-4 py-3 font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group"
+            >
+              Continue
+              <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
+          </div>
+
+          {/* Footer */}
+          <div className="text-center pt-2">
+            <p className="text-sm text-gray-500">
+              Need help?{" "}
+              <a
+                href="/support"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Contact Support
+              </a>
+            </p>
+          </div>
         </div>
-
-        <div className="input-group">
-          <input
-            type="text"
-            placeholder="Mobile number"
-            value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
-          />
-        </div>
-
-        <button onClick={handleLogin}>Continue</button>
       </div>
     </div>
-  )
+  );
 };
-
 
 export default LoginPage;
