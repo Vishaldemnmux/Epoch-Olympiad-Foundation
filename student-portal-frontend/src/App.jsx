@@ -8,20 +8,23 @@ import Certificates from "./pages/Certificates";
 import AnswerKeys from "./pages/AnswerKeys";
 import Feedback from "./pages/Feedback";
 import PracticeOMR from "./pages/PracticeOMR";
+import Sidebar from "./pages/Sidebar";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage />} />  
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admit-card" element={<AdmitCard />} />
-        <Route path="/results" element={<Results />} />
-        <Route path="/study-materials" element={<StudyMaterials />} />
-        <Route path="/certificates" element={<Certificates />} />
-        <Route path="/answer-key" element={<AnswerKeys />} />
-        <Route path="/feedback" element={<Feedback />} />
-        <Route path="/practice-omr" element={<PracticeOMR />} />
+        <Route path="/" element={<LoginPage />} />
+        <Route element={<Sidebar />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admit-card" element={<AdmitCard />} />
+          <Route path="/results" element={<Results />} />
+          <Route path="/study-materials" element={<StudyMaterials />} />
+          <Route path="/certificates" element={<Certificates />} />
+          <Route path="/answer-key" element={<AnswerKeys />} />
+          <Route path="/feedback" element={<Feedback />} />
+          <Route path="/practice-omr" element={<PracticeOMR />} />
+        </Route>
       </Routes>
     </Router>
   );
