@@ -29,7 +29,7 @@ app.get("/get-student", async (req, res) => {
         const studentData = await fetchDataByMobile(mobNo);
         res.json(studentData);
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch student data" });
+        res.status(500).json({ error: "Failed to fetch student data", error });
     }
 });
 

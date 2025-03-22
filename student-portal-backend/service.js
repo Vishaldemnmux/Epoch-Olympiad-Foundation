@@ -1,19 +1,15 @@
-const { MongoClient } = require("mongodb");
-const mongoose = require("mongoose");
 require("dotenv").config();
-
-
-
-
-// MongoDB Connection URI
+const { MongoClient } = require("mongodb");
 const mongoURI = process.env.MONGO_URI 
+const dbName = process.env.DATABASE_NAME
+
 
 
 async function getCollection(collectionName) {
     const client = new MongoClient(mongoURI);
     await client.connect();
     
-    const database = client.db("student-portal-database");  
+    const database = client.db(dbName);  
     const collection = database.collection(collectionName);
     
     return { collection, client }; 
@@ -21,37 +17,73 @@ async function getCollection(collectionName) {
 
 
 async function fetchDataByMobile(mobNo) {
-    const { collection, client } = await getCollection("student-portal");  
-    try {
-        const data = await collection.findOne({ mobNo: parseInt(mobNo) }); 
+    const { collection, client } = await getCollection("student-data");
 
-        if (!data) {
+    try {
+        console.log("Fetching student with Mobile No:", mobNo);
+        console.log("Type of mobNo:", typeof mobNo);
+
+        const data = await collection.findOne({
+            "Mob No": { "": Number(mobNo) } 
+        });
+
+        console.log("MongoDB Response:", JSON.stringify(data, null, 2));
+
+        if (!data || !data["Mob No"] || typeof data["Mob No"] !== "object") {
+            console.error("No valid student data found for Mobile No:", mobNo);
             return { error: "No student found with this mobile number" };
         }
-
-        // Extract only required fields
+        const schoolData = await fetchSchoolData(data["School Code"]);
+        const rollNoKey = Object.keys(data["Roll No"])[0];
         const extractedData = {
-            "Roll no": data.rollNo,
-            "Class": data.class,
-            "Student's name": data.studentName,
-            "Section": data.section,
-            "Mother's Name": data.motherName,
-            "School": data.ParentsWorkingschool,
-            "Father's Name": data["father Name"],
-            "School Code": data.schoolCode,
-            "Mob No": data.mobNo,
-            "City": data.city
+            "Roll No": data["Roll No"]?.[rollNoKey] || "Unknown",
+            "Class": data["Class"],
+            "Student's Name": data["Student Name"],
+            "Section": data["Section"],
+            "Mother's Name": data["Mother Name"],
+            "Father's Name": data["Father Name"],
+            "School Code": data["School Code"],
+            "Mob No": mobNo,
+            "City": schoolData ? schoolData["city"] : "Unknown",
+            "State": schoolData ? schoolData["state"] : "Unknown",
+            "Country": schoolData ? schoolData["country"] : "Unknown",
+            "School": schoolData ? schoolData["schoolName"] : "Unknown"
         };
 
+        console.log("Extracted Data:", JSON.stringify(extractedData, null, 2));
         return extractedData;
+
     } catch (error) {
-        console.error("Error fetching data:", error);
-        return { error: "Failed to fetch data" };
+        console.error("Error fetching data from MongoDB:", error);
+        return { error: "Failed to fetch data", details: error.message };
     } finally {
         await client.close();
     }
 }
 
+async function fetchSchoolData(code) {
+    const { collection, client } = await getCollection("epoch-sample-data");
+
+    try {
+        console.log("Fetching school with School Code:", code);
+
+        const schoolData = await collection.findOne({ "schoolCode": code });
+
+        if (!schoolData) {
+            console.error("No school found for School Code:", code);
+            return { error: "No school found with this code" };
+        }
+
+        console.log("School Data:", schoolData);
+        return schoolData;
+
+    } catch (error) {
+        console.error("Error fetching school data:", error);
+        return { error: "Failed to fetch school data", details: error.message };
+    } finally {
+        await client.close();
+    }
+}
 
 
 module.exports = { fetchDataByMobile};
