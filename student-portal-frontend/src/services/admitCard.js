@@ -24,7 +24,6 @@ export default async function generateAdmitCard(info) {
       examCenter: info.examCenter || "YOUR OWN SCHOOL",
       qrUrl:
         "https://api.qrserver.com/v1/create-qr-code/?data=https://wa.me/919999999999&size=100x100",
-      logoUrl: "../assets/main_logo.png",
     },
     puppeteerArgs: {
       defaultViewport: {
@@ -39,27 +38,27 @@ export default async function generateAdmitCard(info) {
   console.log(`Admit card generated for ${info.name}`);
 }
 
-// const studentInfo = {
-//   name: "Aviral Shukla",
-//   fatherName: "Ajay Shukla",
-//   mother: "Vashnavi Shukla",
-//   class: "10",
-//   section: "B",
-//   rollNo: "16101110",
-//   school: "S. J. EDUCATION CENTRE, HANSH PURAM",
-//   classTeacher: "Mrs. Sharma",
-//   principal: "Mr. Rajesh Kumar",
+const studentInfo = {
+  name: "Aviral Shukla",
+  fatherName: "Ajay Shukla",
+  mother: "Vashnavi Shukla",
+  class: "10",
+  section: "B",
+  rollNo: "16101110",
+  school: "S. J. EDUCATION CENTRE, HANSH PURAM",
+  classTeacher: "Mrs. Sharma",
+  principal: "Mr. Rajesh Kumar",
 
-//   IAO: false,
-//   ITST: true,
-//   IMO: true,
-//   IGKO: false,
+  IAO: false,
+  ITST: true,
+  IMO: true,
+  IGKO: false,
 
-//   ITSTDetails: "18 November 2024, During School Hours",
-//   IMODetails: "9 November 2024, During School Hours",
+  ITSTDetails: "18 November 2024, During School Hours",
+  IMODetails: "9 November 2024, During School Hours",
 
-//   examCenter: "YOUR OWN SCHOOL",
-// };
+  examCenter: "YOUR OWN SCHOOL",
+};
 
 
-// generateAdmitCard(studentInfo);
+generateAdmitCard(studentInfo);
