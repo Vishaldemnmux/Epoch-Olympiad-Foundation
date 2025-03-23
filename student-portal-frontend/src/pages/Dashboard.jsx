@@ -34,7 +34,7 @@ function App() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols- gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Left Column */}
 
           <InfoField label="ROLL NO" value="192113" delay={0} />
