@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   LayoutDashboard,
   CreditCard,
@@ -10,14 +10,23 @@ import {
   PenTool,
   Settings,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
-import mainLogo from "../assets/main_logo.png";
 import { Outlet } from "react-router-dom";
 
-function MenuItem({ icon, text, active = false, delay = 0, href = "#" }) {
+function MenuItem({
+  icon,
+  text,
+  active = false,
+  delay = 0,
+  href = "#",
+  onClick,
+}) {
   return (
     <a
       href={href}
+      onClick={onClick}
       className={`group flex items-center gap-3 px-6 py-3 text-sm transition-all duration-300 animate-slide-in ${
         active ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
       }`}
@@ -32,13 +41,45 @@ function MenuItem({ icon, text, active = false, delay = 0, href = "#" }) {
 }
 
 const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const closeSidebar = () => {
+    if (window.innerWidth < 768) {
+      setIsOpen(false);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={toggleSidebar}
+        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[#003B87] text-white hover:bg-[#002d69] transition-colors"
+      >
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={closeSidebar}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-[#003B87] text-white shadow-xl relative">
+      <aside
+        className={`fixed md:static w-64 bg-[#003B87] text-white shadow-xl h-full  z-40 transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
         <div className="flex items-center justify-center pt-4">
           <img
-            src={mainLogo}
+            src="/main_logo.png"
             alt="IQ Nexus Logo"
             className="w-50 object-contain rounded-full"
           />
@@ -51,48 +92,56 @@ const Sidebar = () => {
             active
             delay={0}
             href="/dashboard"
+            onClick={closeSidebar}
           />
           <MenuItem
             icon={<CreditCard size={20} />}
             text="ADMIT CARD"
             delay={100}
             href="/admit-card"
+            onClick={closeSidebar}
           />
           <MenuItem
             icon={<GraduationCap size={20} />}
             text="RESULTS"
             delay={200}
             href="/results"
+            onClick={closeSidebar}
           />
           <MenuItem
             icon={<BookOpen size={20} />}
             text="STUDY MATERIALS"
             delay={300}
             href="/study-materials"
+            onClick={closeSidebar}
           />
           <MenuItem
             icon={<Award size={20} />}
             text="CERTIFICATIONS"
             delay={400}
             href="/certificates"
+            onClick={closeSidebar}
           />
           <MenuItem
             icon={<KeyRound size={20} />}
             text="ANSWER KEY"
             delay={500}
             href="/answer-key"
+            onClick={closeSidebar}
           />
           <MenuItem
             icon={<MessageSquare size={20} />}
             text="FEEDBACK"
             delay={600}
             href="/feedback"
+            onClick={closeSidebar}
           />
           <MenuItem
             icon={<PenTool size={20} />}
             text="PRACTICE OMR"
             delay={700}
             href="/practice-omr"
+            onClick={closeSidebar}
           />
         </nav>
 
@@ -102,19 +151,23 @@ const Sidebar = () => {
             text="Settings"
             delay={800}
             href="/settings"
+            onClick={closeSidebar}
           />
           <MenuItem
             icon={<LogOut size={20} />}
             text="Log Out"
             delay={900}
             href="/logout"
+            onClick={closeSidebar}
           />
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 overflow-auto">
-        <Outlet />
+      <main className="flex-1 p-4 overflow-auto md:ml-0">
+        <div className="md:ml-0 mt-16 md:mt-0">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
