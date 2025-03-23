@@ -48,8 +48,8 @@ const AdmitCard = () => {
       </div>
 
       {/* Download Buttons */}
-      <div className="flex justify-center gap-4 mt-4">
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:bg-blue-700 transition-all">
+      <div className="flex flex-col md:flex-row justify-center items-center mt-4">
+        <button className="bg-blue-600 w-fit text-center text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:bg-blue-700 transition-all">
           <Download size={16} />
           Download PDF
         </button>

@@ -55,6 +55,7 @@ const Sidebar = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
+      
       {/* Mobile Menu Button */}
       <button
         onClick={toggleSidebar}
@@ -73,7 +74,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static w-64 bg-[#003B87] text-white shadow-xl h-full  z-40 transition-transform duration-300 ${
+        className={`fixed md:static w-64 bg-[#003B87] text-white flex flex-col shadow-xl h-full z-50 transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
@@ -81,7 +82,7 @@ const Sidebar = () => {
           <img
             src="/main_logo.png"
             alt="IQ Nexus Logo"
-            className="w-50 object-contain rounded-full"
+            className="lg:w-50 w-32 object-contain rounded-full"
           />
         </div>
 

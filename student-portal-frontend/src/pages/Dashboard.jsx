@@ -3,8 +3,10 @@ import { Bell } from "lucide-react";
 
 function App() {
   return (
-    <div className="flex-1 w-full h-screen p-8">
-       <div className="flex justify-between items-start mb-8 animate-fade-in">
+    <div className="flex-1 w-full h-screen lg:p-8 p-2">
+
+      {/* HEADER USER INFO */}
+       <div className="flex justify-between items-center mb-8 animate-fade-in">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
               <span className="text-white font-semibold text-xl">J</span>
@@ -32,7 +34,7 @@ function App() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols- gap-6">
           {/* Left Column */}
 
           <InfoField label="ROLL NO" value="192113" delay={0} />

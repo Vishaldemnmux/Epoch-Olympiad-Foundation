@@ -40,16 +40,16 @@ const Results = () => {
         </div>
       </div>
 
-      {/* Download Buttons */}
-      <div className="flex flex-col items-center gap-2">
-        <button className="bg-[#003B87] text-white px-6 py-2 rounded-md flex items-center gap-2 w-52 justify-center hover:bg-[#002e6c] transition">
+       {/* Download Buttons */}
+       <div className="flex flex-col md:flex-row justify-center items-center mt-4">
+        <button className="bg-blue-600 w-fit text-center text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:bg-blue-700 transition-all">
           <Download size={16} />
-          Download As PDF
+          Download PDF
         </button>
-        <span className="text-gray-500 text-sm">or</span>
-        <button className="bg-[#003B87] text-white px-6 py-2 rounded-md flex items-center gap-2 w-52 justify-center hover:bg-[#002e6c] transition">
+        <button className="text-blue-600 px-4 py-2 hover:underline">or</button>
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:bg-blue-700 transition-all">
           <Download size={16} />
-          Download As Image
+          Download Image
         </button>
       </div>
     </div>
