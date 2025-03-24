@@ -1,61 +1,64 @@
 import React from "react";
 import { Bell } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 function App() {
+  const { state } = useLocation();
+  const student = state?.student;
+
   return (
     <div className="flex-1 w-full h-screen lg:p-8 p-2">
-
       {/* HEADER USER INFO */}
-       <div className="flex justify-between items-center mb-8 animate-fade-in">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
-              <span className="text-white font-semibold text-xl">J</span>
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold">Welcome, John Doe</h2>
-              <p className="text-gray-600">Your Dashboard Overview</p>
-            </div>
+      <div className="flex justify-between items-center mb-8 animate-fade-in">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
+            <span className="text-white font-semibold text-xl">
+              {student?.["Student's Name"]?.charAt(0) || "S"}
+            </span>
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Bell className="w-6 h-6 text-gray-600 cursor-pointer hover:text-blue-600 transition-colors" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                2
-              </span>
-            </div>
-
-            {/* Avatar */}
-            <img
-              src="https://i.pravatar.cc/100?u=john"
-              alt="User Avatar"
-              className="w-14 h-14 rounded-full border border-gray-300 object-cover"
-            />
+          <div>
+            <h2 className="text-2xl font-semibold">
+              Welcome, {student?.["Student's Name"] || "Student"}
+            </h2>
+            <p className="text-gray-600">Your Dashboard Overview</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Left Column */}
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Bell className="w-6 h-6 text-gray-600 cursor-pointer hover:text-blue-600 transition-colors" />
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              2
+            </span>
+          </div>
 
-          <InfoField label="ROLL NO" value="192113" delay={0} />
-          <InfoField label="STUDENT NAME" value="XYZ SHARMA" delay={100} />
-          <InfoField label="FATHER'S NAME" value="MR. ABC SHARMA" delay={200} />
-          <InfoField label="MOTHER'S NAME" value="MRS. EFG RANI" delay={300} />
-          <InfoField label="MOBILE NO" value="9898989898" delay={400} />
-
-          <InfoField
-            label="SCHOOL NAME"
-            value="EURO INTERNATIONAL SCHOOL"
-            delay={500}
-          />
-          <InfoField label="SCHOOL CODE" value="12500011" delay={600} />
-          <InfoField label="CLASS AND SECTION" value="6TH B" delay={700} />
-          <InfoField
-            label="CITY, STATE"
-            value="GURUGRAM, HARYANA"
-            delay={800}
+          <img
+            src={`https://i.pravatar.cc/100?u=${student?.["Mob No"]}`}
+            alt="User Avatar"
+            className="w-14 h-14 rounded-full border border-gray-300 object-cover"
           />
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <InfoField label="ROLL NO" value={student?.["Roll No"] || "N/A"} delay={0} />
+        <InfoField label="STUDENT NAME" value={student?.["Student's Name"] || "N/A"} delay={100} />
+        <InfoField label="FATHER'S NAME" value={student?.["Father's Name"] || "N/A"} delay={200} />
+        <InfoField label="MOTHER'S NAME" value={student?.["Mother's Name"] || "N/A"} delay={300} />
+        <InfoField label="MOBILE NO" value={student?.["Mob No"] || "N/A"} delay={400} />
+        <InfoField label="SCHOOL NAME" value={student?.School || "N/A"} delay={500} />
+        <InfoField label="SCHOOL CODE" value={student?.["School Code"] || "N/A"} delay={600} />
+        <InfoField
+          label="CLASS AND SECTION"
+          value={`${student?.Class || ""} ${student?.Section || ""}`.trim() || "N/A"}
+          delay={700}
+        />
+        <InfoField
+          label="CITY, STATE"
+          value={`${student?.City || ""}, ${student?.State || ""}`.trim() || "N/A"}
+          delay={800}
+        />
+      </div>
     </div>
   );
 }

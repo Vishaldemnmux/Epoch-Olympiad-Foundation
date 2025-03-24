@@ -10,15 +10,17 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use(express.static(path.join(__dirname, "../frontend/build")));
+// app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-app.get("/", (req, res) => {
-    return res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+// });
 
 
 app.get("/get-student", async (req, res) => {
     const authHeader = req.headers.authorization;
+    console.log(authHeader);
+    
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(400).json({ error: "Mobile number is required" });
     }
@@ -29,14 +31,14 @@ app.get("/get-student", async (req, res) => {
         const studentData = await fetchDataByMobile(mobNo);
         res.json(studentData);
     } catch (error) {
-        return res.status(500).json({ error: "Failed to fetch student data" });
+        res.status(500).json({ error: "Failed to fetch student data", error });
     }
 });
 
 
 
 app.get("/api/message", (req, res) => {
-    return res.json({ message: "Hello from Express Backend!" });
+    res.json({ message: "Hello from Express Backend!" });
   });
   
 
