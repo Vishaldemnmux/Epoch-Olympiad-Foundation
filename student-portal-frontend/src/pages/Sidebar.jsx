@@ -33,7 +33,7 @@ function MenuItem({
 
     if (text === "Log Out") {
       localStorage.clear(); // Clear all stored data (or selectively clear if needed)
-      navigate("/login");   // Redirect to login page
+      navigate("/");   // Redirect to login page
     }
 
     if (onClick) onClick(); // Call any additional click handler (like closeSidebar)
