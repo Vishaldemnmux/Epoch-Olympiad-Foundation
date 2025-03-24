@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Outlet } from "react-router-dom";
 
+import { useNavigate } from "react-router-dom";
+
 function MenuItem({
   icon,
   text,
@@ -23,10 +25,24 @@ function MenuItem({
   href = "#",
   onClick,
 }) {
+  const navigate = useNavigate();
+
+  const handleClick = (e) => {
+    // Prevent default link behavior
+    e.preventDefault();
+
+    if (text === "Log Out") {
+      localStorage.clear(); // Clear all stored data (or selectively clear if needed)
+      navigate("/login");   // Redirect to login page
+    }
+
+    if (onClick) onClick(); // Call any additional click handler (like closeSidebar)
+  };
+
   return (
     <a
       href={href}
-      onClick={onClick}
+      onClick={handleClick}
       className={`group flex items-center gap-3 px-6 py-3 text-sm transition-all duration-300 animate-slide-in ${
         active ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
       }`}
@@ -39,6 +55,8 @@ function MenuItem({
     </a>
   );
 }
+
+
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -158,7 +176,6 @@ const Sidebar = () => {
             icon={<LogOut size={20} />}
             text="Log Out"
             delay={900}
-            href="/logout"
             onClick={closeSidebar}
           />
         </div>

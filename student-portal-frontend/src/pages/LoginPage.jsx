@@ -2,15 +2,55 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import mainLogo from "../assets/main_logo.png";
+import axios from "axios";
 
 const LoginPage = () => {
   const [batch, setBatch] = useState("2024-25");
   const [mobile, setMobile] = useState("");
+  const [formSubmitting, setFormSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    console.log("Logging in with:", batch, mobile);
-    navigate("/dashboard", { state: { mobile } });
+  const handleLogin = async () => {
+    setFormSubmitting(true);
+    if (!mobile) {
+      alert("Please enter your mobile number.");
+      return;
+    }
+
+    try {
+      const response = await axios.get("http://localhost:5000/get-student", {
+        headers: {
+          authorization: `Bearer ${mobile}`,
+        },
+      });
+
+      // Navigate only if data is returned
+      if (response.status === 200 && response.data) {
+        const studentData = response.data;
+        localStorage.setItem("student_mobile", mobile);
+        navigate("/dashboard", {
+          state: {
+            mobile,
+            student: studentData,
+          },
+        });
+      } else {
+        alert("Invalid credentials or no data found.");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const errMsg = error.response?.data?.error || "Something went wrong";
+
+      if (status === 500) {
+        alert("Server error: Failed to fetch student data");
+      } else if (status === 400) {
+        alert("Invalid request: Mobile number is required");
+      } else {
+        alert(errMsg);
+      }
+    } finally {
+      setFormSubmitting(false);
+    }
   };
 
   return (
@@ -27,7 +67,6 @@ const LoginPage = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            
           </div>
 
           {/* Form Section */}
@@ -68,6 +107,7 @@ const LoginPage = () => {
             {/* Login Button */}
             <button
               onClick={handleLogin}
+              disabled={formSubmitting}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg px-4 py-3 font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group"
             >
               Continue
