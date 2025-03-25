@@ -26,9 +26,16 @@ app.get("/get-student", async (req, res) => {
 
   try {
     const studentData = await fetchDataByMobile(mobNo);
-    // console.log(studentData["Mob No"]);
 
-    return res.status(200).json({ studentData, mobile: studentData["Mob No"] });
+    if (studentData["Mob No"]) {
+      return res
+        .status(200)
+        .json({ studentData, mobile: studentData["Mob No"] });
+    }
+
+    return res
+      .status(404)
+      .json({ error: "No student found with this mobile number" });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch student data", error });
   }

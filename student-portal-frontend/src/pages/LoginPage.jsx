@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import mainLogo from "../assets/main_logo.png";
 import axios from "axios";
@@ -29,7 +28,7 @@ const LoginPage = () => {
       });
 
       if (response.status === 200 && response.data) {
-        const studentData = response.data.studentData;        
+        const studentData = response.data.studentData;
 
         // Save to localStorage (optional redundancy)
         // localStorage.setItem("student_mobile", response.data.mobile);

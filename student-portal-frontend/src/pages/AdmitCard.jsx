@@ -8,7 +8,8 @@ const AdmitCard = () => {
 
   return (
     <div className=" space-y-3 w-full h-full flex flex-col p-4">
-
+      
+      
       {/* HEADER */}
       <div className="flex items-center gap-3">
         <div className="bg-blue-100 rounded-full w-9 h-9 flex items-center justify-center">
