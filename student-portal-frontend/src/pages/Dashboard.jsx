@@ -1,10 +1,25 @@
 import React from "react";
 import { Bell } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-function App() {
-  const { state } = useLocation();
-  const student = state?.student;
+
+function InfoField({ label, value, delay = 0 }) {
+  return (
+    <div
+      className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] animate-fade-in"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <p className="text-sm text-gray-600 mb-1">{label}</p>
+      <p className="text-gray-900 font-medium">{value}</p>
+    </div>
+  );
+}
+
+
+const Dashboard = () => {
+  const student = useSelector((state) => state.auth.user)
+  console.log(student);
+  
 
   return (
     <div className="flex-1 w-full h-screen lg:p-8 p-2">
@@ -63,16 +78,5 @@ function App() {
   );
 }
 
-function InfoField({ label, value, delay = 0 }) {
-  return (
-    <div
-      className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] animate-fade-in"
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <p className="text-sm text-gray-600 mb-1">{label}</p>
-      <p className="text-gray-900 font-medium">{value}</p>
-    </div>
-  );
-}
 
-export default App;
+export default Dashboard;

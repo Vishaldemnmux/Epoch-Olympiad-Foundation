@@ -19,19 +19,19 @@ async function getCollection(collectionName) {
 async function fetchDataByMobile(mobNo) {
     
     const { collection, client } = await getCollection("student-data");
-    console.log("Collection:", collection);
-    console.log("Client:", client);
+    // console.log("Collection:", collection);
+    // console.log("Client:", client);
     
 
     try {
-        console.log("Fetching student with Mobile No:", mobNo);
-        console.log("Type of mobNo:", typeof mobNo);
+        // console.log("Fetching student with Mobile No:", mobNo);
+        // console.log("Type of mobNo:", typeof mobNo);
 
         const data = await collection.findOne({
             "Mob No": { "": Number(mobNo) } 
         });
 
-        console.log("MongoDB Response:", JSON.stringify(data, null, 2));
+        // console.log("MongoDB Response:", JSON.stringify(data, null, 2));
 
         if (!data || !data["Mob No"] || typeof data["Mob No"] !== "object") {
             console.error("No valid student data found for Mobile No:", mobNo);
@@ -54,7 +54,7 @@ async function fetchDataByMobile(mobNo) {
             "School": schoolData ? schoolData["schoolName"] : "Unknown"
         };
 
-        console.log("Extracted Data:", JSON.stringify(extractedData, null, 2));
+        // console.log("Extracted Data:", JSON.stringify(extractedData, null, 2));
         return extractedData;
 
     } catch (error) {
@@ -69,7 +69,7 @@ async function fetchSchoolData(code) {
     const { collection, client } = await getCollection("epoch-sample-data");
 
     try {
-        console.log("Fetching school with School Code:", code);
+        // console.log("Fetching school with School Code:", code);
 
         const schoolData = await collection.findOne({ "schoolCode": code });
 
@@ -78,7 +78,7 @@ async function fetchSchoolData(code) {
             return { error: "No school found with this code" };
         }
 
-        console.log("School Data:", schoolData);
+        // console.log("School Data:", schoolData);
         return schoolData;
 
     } catch (error) {

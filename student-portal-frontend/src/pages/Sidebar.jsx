@@ -13,9 +13,9 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { Outlet } from "react-router-dom";
-
-import { useNavigate } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
 
 function MenuItem({
   icon,
@@ -25,23 +25,20 @@ function MenuItem({
   href = "#",
   onClick,
 }) {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleClick = (e) => {
-    // Prevent default link behavior
-    e.preventDefault();
-
     if (text === "Log Out") {
-      localStorage.clear(); // Clear all stored data (or selectively clear if needed)
-      navigate("/");   // Redirect to login page
+      e.preventDefault(); // Only prevent default for logout
+      dispatch(logout());
     }
 
-    if (onClick) onClick(); // Call any additional click handler (like closeSidebar)
+    if (onClick) onClick(); // Optional: closeSidebar
   };
 
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       onClick={handleClick}
       className={`group flex items-center gap-3 px-6 py-3 text-sm transition-all duration-300 animate-slide-in ${
         active ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
@@ -52,11 +49,9 @@ function MenuItem({
         {icon}
       </span>
       <span>{text}</span>
-    </a>
+    </Link>
   );
 }
-
-
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -73,7 +68,6 @@ const Sidebar = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      
       {/* Mobile Menu Button */}
       <button
         onClick={toggleSidebar}
@@ -175,6 +169,7 @@ const Sidebar = () => {
           <MenuItem
             icon={<LogOut size={20} />}
             text="Log Out"
+            href="/"
             delay={900}
             onClick={closeSidebar}
           />
