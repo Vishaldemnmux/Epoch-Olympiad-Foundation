@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 require("dotenv").config();
 const { fetchDataByMobile } = require("./service.js");
 const { generateAdmitCard, dbConnection, uploadAdmitCard, fetchAdmitCardFromDB, } =  require("./admitCardService.js");
@@ -74,7 +75,7 @@ app.post("/admit-card", async (req, res) => {
    
     await dbConnection(); // Ensure DB is connected
 
-    const uploadResult = await uploadAdmitCard(studentData, res);
+    await uploadAdmitCard(studentData, res);
     
 
     if (!res.headersSent) { 
@@ -95,6 +96,14 @@ app.post("/admit-card", async (req, res) => {
 
 app.post("/logout", (req, res) => {
   const { mobNo } = req.body;
+  const outputDir = path.join(__dirname, "outputs");
+  if (fs.existsSync(outputDir)) {
+    fs.readdirSync(outputDir).forEach((file) => {
+      const filePath = path.join(outputDir, file);
+      fs.unlinkSync(filePath); // Delete file
+    });
+  }
+
 
   if (mobNo && studentCache[mobNo]) {
     delete studentCache[mobNo]; 
