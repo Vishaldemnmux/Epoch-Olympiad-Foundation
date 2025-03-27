@@ -19,19 +19,11 @@ async function getCollection(collectionName) {
 async function fetchDataByMobile(mobNo) {
     
     const { collection, client } = await getCollection("student-data");
-    // console.log("Collection:", collection);
-    // console.log("Client:", client);
-    
 
     try {
-        // console.log("Fetching student with Mobile No:", mobNo);
-        // console.log("Type of mobNo:", typeof mobNo);
-
         const data = await collection.findOne({
             "Mob No": { "": Number(mobNo) } 
         });
-
-        // console.log("MongoDB Response:", JSON.stringify(data, null, 2));
 
         if (!data || !data["Mob No"] || typeof data["Mob No"] !== "object") {
             console.error("No valid student data found for Mobile No:", mobNo);
@@ -53,8 +45,6 @@ async function fetchDataByMobile(mobNo) {
             "Country": schoolData ? schoolData["country"] : "Unknown",
             "School": schoolData ? schoolData["schoolName"] : "Unknown"
         };
-
-        // console.log("Extracted Data:", JSON.stringify(extractedData, null, 2));
         return extractedData;
 
     } catch (error) {
@@ -69,16 +59,12 @@ async function fetchSchoolData(code) {
     const { collection, client } = await getCollection("epoch-sample-data");
 
     try {
-        // console.log("Fetching school with School Code:", code);
-
         const schoolData = await collection.findOne({ "schoolCode": code });
 
         if (!schoolData) {
             console.error("No school found for School Code:", code);
             return { error: "No school found with this code" };
         }
-
-        // console.log("School Data:", schoolData);
         return schoolData;
 
     } catch (error) {
@@ -90,4 +76,6 @@ async function fetchSchoolData(code) {
 }
 
 
-module.exports = { fetchDataByMobile};
+
+
+module.exports = { fetchDataByMobile };
