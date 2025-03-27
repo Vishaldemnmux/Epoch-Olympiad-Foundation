@@ -19,7 +19,7 @@ const PORT = process.env.PORT;
 const studentCache = {};
 app.use(
   cors({
-    origin: ["https://epoch-olympiad-foundation.vercel.app"],
+    origin: "*",
   })
 );
 app.use(express.json());
