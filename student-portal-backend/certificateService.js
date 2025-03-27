@@ -47,11 +47,18 @@ async function generateAndUploadCertificate(info) {
       if (!fs.existsSync(templatePath)) {
         throw new Error(`❌ Template file not found: ${templatePath}`);
       }
+
+      const logoPath = path.join(__dirname, "assets", "logo.png");
+      
+      const logoBase64 = fs.readFileSync(logoPath, { encoding: "base64" });
+      const logoSrc = `data:image/png;base64,${logoBase64}`; // change to image/jpeg if your file is .jpg
+      
   
       await nodeHtmlToImage({
         output: outputPath,
         html: fs.readFileSync(templatePath, "utf8"),
         content: {
+            logoSrc,
           name: info["Student's Name"],
           father: info["Father's Name"],
           mother: info["Mother's Name"],
