@@ -2,29 +2,25 @@ const { MongoClient, GridFSBucket } = require("mongodb");
 const fs = require("fs");
 const path = require("path");
 const nodeHtmlToImage = require("node-html-to-image");
-const { pipeline } = require("stream/promises");
-const mongoURI = process.env.MONGO_URI; // MongoDB Connection String
+const mongoURI = process.env.MONGO_URI; 
 
 
 
-// Function to get MongoDB GridFS Bucket
 async function getMongoBucket(type) {
   const dbName = "test";
   const client = await MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
   const db = client.db(dbName);
 
-  // Ensure collection exists (MongoDB auto-creates it when inserting data)
   await db.listCollections({ name: `${type}.files` }).hasNext().then(async (exists) => {
     if (!exists) {
-      console.log(`Database "${dbName}" does not exist, creating it...`);
-      await db.createCollection(`${type}.files`); // Create collection if not exists
+      await db.createCollection(`${type}.files`); 
     }
   });
 
   return { bucket: new GridFSBucket(db), client };
 }
 
-// Function to Generate and Upload Certificate
+
 async function generateAndUploadCertificate(info) {
     const fileName = `certificate_${info["Student's Name"]}.png`;
     const outputDir = path.join(__dirname, "outputs");
@@ -33,23 +29,18 @@ async function generateAndUploadCertificate(info) {
     try {
       const { bucket, client } = await getMongoBucket();
   
-      // 🔹 Ensure "outputs" folder exists
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
   
-      // 🔹 Check if certificate already exists in GridFS
       const existingFile = await bucket.find({ filename: fileName }).toArray();
       if (existingFile.length > 0) {
-        console.log(`✅ Certificate ${fileName} already exists in MongoDB. Skipping upload.`);
         client.close();
         return fileName;
       }
-  
-      // 🔹 Check if certificate exists in the output folder and delete it
+
       if (fs.existsSync(outputPath)) {
         fs.unlinkSync(outputPath);
-        console.log(`🗑 Deleted existing local certificate: ${outputPath}`);
       }
   
       const templatePath = path.join(__dirname, "designs", "certificate.html");
@@ -57,7 +48,6 @@ async function generateAndUploadCertificate(info) {
         throw new Error(`❌ Template file not found: ${templatePath}`);
       }
   
-      // 🔹 Generate certificate image from HTML template
       await nodeHtmlToImage({
         output: outputPath,
         html: fs.readFileSync(templatePath, "utf8"),
@@ -80,7 +70,6 @@ async function generateAndUploadCertificate(info) {
         quality: 100,
       });
   
-      console.log(`📜 Certificate generated: ${outputPath}`);
   
       await new Promise((resolve, reject) => {
         const readStream = fs.createReadStream(outputPath);
@@ -89,7 +78,6 @@ async function generateAndUploadCertificate(info) {
         readStream.pipe(uploadStream);
   
         uploadStream.on("finish", () => {
-          console.log(`✅ Certificate uploaded to MongoDB: ${fileName}`);
           client.close();
           resolve(fileName);
         });
@@ -108,36 +96,27 @@ async function generateAndUploadCertificate(info) {
     }
   }
 
-// Function to Fetch Image from MongoDB
+
 async function fetchImage(type, name, res) {
-    console.log(`🔹 Fetch request received for type: ${type}, name: ${name}`);
   
     if (!["certificate", "admitCard"].includes(type)) {
-      console.log(`❌ Invalid type received: ${type}`);
       return res.status(400).json({ error: "Invalid type. Use 'certificate' or 'admitCard'" });
     }
   
     try {
-      console.log(`🔹 Connecting to MongoDB GridFS for type: ${type}...`);
       const { bucket, client, db } = await getMongoBucket(type);  // Check DB Connection
       
   
       const fileName = `${type}_${name}.png`;
-      console.log(`🔹 Looking for file: ${fileName} in GridFS...`);
   
-      // 🔹 Check if file exists before opening the download stream
       const files = await bucket.find({ filename: fileName }).toArray();
-      console.log(`🔹 Query executed, files found: ${files.length}`);
   
       if (files.length === 0) {
-        console.log(`❌ File not found in MongoDB: ${fileName}`);
         client.close();
         return res.status(404).json({ error: "File not found" });
       }
   
-      console.log(`✅ File found: ${fileName}. Starting download...`);
   
-      // 🔹 Fetch file from MongoDB GridFS
       const downloadStream = bucket.openDownloadStreamByName(fileName);
       res.setHeader("Content-Type", "image/png");
   

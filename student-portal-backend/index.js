@@ -71,27 +71,20 @@ app.post("/admit-card", async (req, res) => {
     if (!result.success) {
       return res.status(500).json({ error: result.error });
     }
-
-    console.log("Admit card generated successfully:", result.path);
-
    
     await dbConnection(); // Ensure DB is connected
 
     const uploadResult = await uploadAdmitCard(studentData, res);
     
-    // if (!uploadResult.success) {
-    //   return res.status(500).json({ error: uploadResult.error });
-    // }
 
-    if (!res.headersSent) {  // Prevent multiple responses
+    if (!res.headersSent) { 
       return res.status(200).json({ 
         message: "Admit card generated and stored successfully", 
         path: result.path 
       });
     }
   } catch (error) {
-    console.error("❌ Error processing admit card:", error);
-    if (!res.headersSent) { // Ensure only one response is sent
+    if (!res.headersSent) {
       return res.status(500).json({ error: "Internal server error" });
     }
   }
@@ -115,9 +108,7 @@ app.post("/logout", (req, res) => {
 app.get("/fetch-admit-card", async (req, res) => {
   try {
     const { mobNo } = req.body;
-    console.log(`🔍 Fetching admit card for mobile number: ${mobNo}`);
     let studentData;
-    // Fetch Student Data from Cache
     if (studentCache[mobNo]) {
       studentData = studentCache[mobNo];
     } else {
@@ -132,8 +123,6 @@ app.get("/fetch-admit-card", async (req, res) => {
     if (!studentName) {
       return res.status(400).json({ error: "Invalid student details in cache" });
     }
-
-    // Call Function to Fetch Admit Card from DB
     await fetchAdmitCardFromDB(studentName, res);
 
   } catch (error) {
