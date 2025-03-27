@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const { MongoClient, GridFSBucket } = require("mongodb");
 const mongoURI = process.env.MONGO_URI;
 
-
 async function databaseConnection() {
   const client = new MongoClient(mongoURI);
   await client.connect();
@@ -23,10 +22,16 @@ async function generateAdmitCard(info) {
       throw new Error(`Template file not found: ${templatePath}`);
     }
 
+    const logoPath = path.join(__dirname, "assets", "logo.png");
+
+    const logoBase64 = fs.readFileSync(logoPath, { encoding: "base64" });
+    const logoSrc = `data:image/png;base64,${logoBase64}`; // change to image/jpeg if your file is .jpg
+
     await nodeHtmlToImage({
       output: outputPath,
       html: fs.readFileSync(templatePath, "utf8"),
       content: {
+        logoSrc,
         name: info["Student's Name"],
         father: info["Father's Name"],
         mother: info["Mother's Name"],
@@ -61,8 +66,6 @@ async function generateAdmitCard(info) {
   }
 }
 
-
-
 function clearOutputDirectory(outputDir) {
   if (fs.existsSync(outputDir)) {
     fs.readdirSync(outputDir).forEach((file) => {
@@ -74,8 +77,6 @@ function clearOutputDirectory(outputDir) {
   }
 }
 
-
-
 async function dbConnection() {
   try {
     const conn = await mongoose.createConnection(process.env.MONGO_URI, {
@@ -85,11 +86,13 @@ async function dbConnection() {
 
     return new Promise((resolve, reject) => {
       conn.once("open", async () => {
-
         const collections = await conn.db.listCollections().toArray();
         const collectionNames = collections.map((col) => col.name);
 
-        if (collectionNames.includes("admitCards.files") && collectionNames.includes("admitCards.chunks")) {
+        if (
+          collectionNames.includes("admitCards.files") &&
+          collectionNames.includes("admitCards.chunks")
+        ) {
         } else {
           new GridFSBucket(conn.db, { bucketName: "admitCards" });
         }
@@ -107,8 +110,6 @@ async function dbConnection() {
     return { status: "failed", error: error.message };
   }
 }
-
-
 
 async function uploadAdmitCard(studentData, res) {
   try {
@@ -138,15 +139,21 @@ async function uploadAdmitCard(studentData, res) {
 
     const fileStream = fs.createReadStream(admitCardPath);
 
-    const writeStream = gfs.openUploadStream(`admitCard_${studentData["Student's Name"]}.png`, {
-      contentType: "image/png",
-      metadata: { studentId: studentData["_id"], mobNo: studentData["Mob No"] },
-    });
+    const writeStream = gfs.openUploadStream(
+      `admitCard_${studentData["Student's Name"]}.png`,
+      {
+        contentType: "image/png",
+        metadata: {
+          studentId: studentData["_id"],
+          mobNo: studentData["Mob No"],
+        },
+      }
+    );
 
     fileStream.pipe(writeStream);
 
     writeStream.on("finish", () => {
-      fs.unlinkSync(admitCardPath); 
+      fs.unlinkSync(admitCardPath);
 
       if (!res.headersSent) {
         return res.status(200).json({
@@ -161,7 +168,6 @@ async function uploadAdmitCard(studentData, res) {
         res.status(500).json({ error: "Failed to upload admit card" });
       }
     });
-
   } catch (error) {
     console.error("❌ Error processing admit card:", error);
     if (!res.headersSent) {
@@ -169,7 +175,6 @@ async function uploadAdmitCard(studentData, res) {
     }
   }
 }
-
 
 async function fetchAdmitCardFromDB(studentName, res) {
   try {
@@ -180,7 +185,9 @@ async function fetchAdmitCardFromDB(studentName, res) {
 
     const db = dbResponse.conn;
     const gfs = new GridFSBucket(db, { bucketName: "admitCards" });
-    const fileExists = await db.collection("admitCards.files").findOne({ filename: `admitCard_${studentName}.png` });
+    const fileExists = await db
+      .collection("admitCards.files")
+      .findOne({ filename: `admitCard_${studentName}.png` });
 
     if (!fileExists) {
       return res.status(404).json({ error: "Admit card not found" });
@@ -189,13 +196,15 @@ async function fetchAdmitCardFromDB(studentName, res) {
     res.setHeader("Content-Type", "image/png");
     const readStream = gfs.openDownloadStream(fileExists._id);
     readStream.pipe(res);
-
   } catch (error) {
     console.error("❌ Error fetching admit card:", error);
     res.status(500).json({ error: "Failed to fetch admit card" });
   }
 }
 
-
-
-module.exports = { generateAdmitCard, dbConnection, uploadAdmitCard, fetchAdmitCardFromDB};
+module.exports = {
+  generateAdmitCard,
+  dbConnection,
+  uploadAdmitCard,
+  fetchAdmitCardFromDB,
+};
