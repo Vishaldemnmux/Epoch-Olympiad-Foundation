@@ -4,13 +4,24 @@ const path = require("path");
 const fs = require("fs");
 require("dotenv").config();
 const { fetchDataByMobile } = require("./service.js");
-const { generateAdmitCard, dbConnection, uploadAdmitCard, fetchAdmitCardFromDB, } =  require("./admitCardService.js");
-const { generateAndUploadCertificate, fetchImage } = require("./certificateService.js");
-const { fetchStudyMaterial } = require("./studyMaterialService.js");
+const {
+  generateAdmitCard,
+  dbConnection,
+  uploadAdmitCard,
+  fetchAdmitCardFromDB,
+} = require("./admitCardService.js");
+const {
+  generateAndUploadCertificate,
+  fetchImage,
+} = require("./certificateService.js");
 const app = express();
 const PORT = process.env.PORT;
-const studentCache = {}; 
-app.use(cors());
+const studentCache = {};
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(express.json());
 
 // app.use(express.static(path.join(__dirname, "../frontend/build")));
@@ -29,25 +40,28 @@ app.get("/get-student", async (req, res) => {
   const mobNo = authHeader.split("Bearer ")[1];
 
   if (studentCache[mobNo]) {
-    return res.status(200).json({ studentData: studentCache[mobNo], mobile: mobNo });
+    return res
+      .status(200)
+      .json({ studentData: studentCache[mobNo], mobile: mobNo });
   }
 
   try {
     const studentData = await fetchDataByMobile(mobNo);
 
     if (studentData["Mob No"]) {
-      studentCache[mobNo] = studentData; 
-      return res.status(200).json({ studentData, mobile: studentData["Mob No"] });
+      studentCache[mobNo] = studentData;
+      return res
+        .status(200)
+        .json({ studentData, mobile: studentData["Mob No"] });
     }
 
-    return res.status(404).json({ error: "No student found with this mobile number" });
+    return res
+      .status(404)
+      .json({ error: "No student found with this mobile number" });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch student data", error });
   }
 });
-
-
-
 
 app.post("/admit-card", async (req, res) => {
   const { mobNo } = req.body;
@@ -63,7 +77,9 @@ app.post("/admit-card", async (req, res) => {
   } else {
     studentData = await fetchDataByMobile(mobNo);
     if (!studentData || !studentData["Mob No"]) {
-      return res.status(404).json({ error: "No student found with this mobile number" });
+      return res
+        .status(404)
+        .json({ error: "No student found with this mobile number" });
     }
     studentCache[mobNo] = studentData;
   }
@@ -73,16 +89,15 @@ app.post("/admit-card", async (req, res) => {
     if (!result.success) {
       return res.status(500).json({ error: result.error });
     }
-   
+
     await dbConnection(); // Ensure DB is connected
 
     await uploadAdmitCard(studentData, res);
-    
 
-    if (!res.headersSent) { 
-      return res.status(200).json({ 
-        message: "Admit card generated and stored successfully", 
-        path: result.path 
+    if (!res.headersSent) {
+      return res.status(200).json({
+        message: "Admit card generated and stored successfully",
+        path: result.path,
       });
     }
   } catch (error) {
@@ -91,9 +106,6 @@ app.post("/admit-card", async (req, res) => {
     }
   }
 });
-
-
-
 
 app.post("/logout", (req, res) => {
   const { mobNo } = req.body;
@@ -105,15 +117,12 @@ app.post("/logout", (req, res) => {
     });
   }
 
-
   if (mobNo && studentCache[mobNo]) {
-    delete studentCache[mobNo]; 
+    delete studentCache[mobNo];
   }
 
   res.status(200).json({ message: "Logged out successfully" });
 });
-
-
 
 app.get("/fetch-admit-card", async (req, res) => {
   try {
@@ -124,27 +133,25 @@ app.get("/fetch-admit-card", async (req, res) => {
     } else {
       studentData = await fetchDataByMobile(mobNo);
       if (!studentData || !studentData["Mob No"]) {
-        return res.status(404).json({ error: "No student found with this mobile number" });
+        return res
+          .status(404)
+          .json({ error: "No student found with this mobile number" });
       }
       studentCache[mobNo] = studentData;
     }
 
     const studentName = studentData["Student's Name"];
     if (!studentName) {
-      return res.status(400).json({ error: "Invalid student details in cache" });
+      return res
+        .status(400)
+        .json({ error: "Invalid student details in cache" });
     }
     await fetchAdmitCardFromDB(studentName, res);
-
   } catch (error) {
     console.error("❌ Error processing request:", error);
     res.status(500).json({ error: "Failed to process request" });
   }
 });
-
-
-
-
-
 
 // API to Generate & Upload Certificate/Admit Card
 app.post("/generate/:type", async (req, res) => {
@@ -156,7 +163,9 @@ app.post("/generate/:type", async (req, res) => {
   } else {
     studentData = await fetchDataByMobile(mobNo);
     if (!studentData || !studentData["Mob No"]) {
-      return res.status(404).json({ error: "No student found with this mobile number" });
+      return res
+        .status(404)
+        .json({ error: "No student found with this mobile number" });
     }
     studentCache[mobNo] = studentData;
   }
@@ -166,14 +175,24 @@ app.post("/generate/:type", async (req, res) => {
     return res.status(400).json({ error: "Invalid student details in cache" });
   }
   if (!["certificate", "admitCard"].includes(type)) {
-    return res.status(400).json({ error: "Invalid type. Use 'certificate' or 'admitCard'" });
+    return res
+      .status(400)
+      .json({ error: "Invalid type. Use 'certificate' or 'admitCard'" });
   }
 
   try {
     const fileName = await generateAndUploadCertificate(studentData, type);
-    res.json({ message: `${type} generated and uploaded successfully!`, fileName });
+    res.json({
+      message: `${type} generated and uploaded successfully!`,
+      fileName,
+    });
   } catch (error) {
-    res.status(500).json({ error: `Error generating/uploading ${type}`, details: error.message });
+    res
+      .status(500)
+      .json({
+        error: `Error generating/uploading ${type}`,
+        details: error.message,
+      });
   }
 });
 
@@ -186,7 +205,9 @@ app.get("/:type/", async (req, res) => {
   } else {
     studentData = await fetchDataByMobile(mobNo);
     if (!studentData || !studentData["Mob No"]) {
-      return res.status(404).json({ error: "No student found with this mobile number" });
+      return res
+        .status(404)
+        .json({ error: "No student found with this mobile number" });
     }
     studentCache[mobNo] = studentData;
   }

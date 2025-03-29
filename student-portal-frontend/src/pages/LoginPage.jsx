@@ -5,6 +5,9 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/authSlice";
 
+// const BASE_API_URL = "http://localhost:5000";
+const BASE_API_URL = "https://nexus-olympiad-foundation.onrender.com"
+
 const LoginPage = () => {
   const [batch, setBatch] = useState("2024-25");
   const [mobile, setMobile] = useState("");
@@ -21,7 +24,7 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await axios.get("http://localhost:5000/get-student", {
+      const response = await axios.get(`${BASE_API_URL}/get-student`, {
         headers: {
           authorization: `Bearer ${mobile}`,
         },
