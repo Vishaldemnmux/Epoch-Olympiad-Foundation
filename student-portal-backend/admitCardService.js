@@ -44,7 +44,7 @@ async function generateAdmitCard(info) {
         city: info["City"],
         state: info["State"],
         country: info["Country"],
-        examCenter: "YOUR OWN SCHOOL",
+        examCenter: info["Exam Centre"],
         qrUrl:
           "https://api.qrserver.com/v1/create-qr-code/?data=https://wa.me/919999999999&size=100x100",
       },
