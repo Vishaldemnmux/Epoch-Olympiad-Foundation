@@ -71,6 +71,7 @@ async function generateAndUploadCertificate(info) {
           classRank: info["classRank"] || "Unknown",
           date: new Date().toISOString().split("T")[0], // Current Date
           rollNo: info["Roll No"],
+          examCenter: info["Exam Centre"],
         },
         puppeteerArgs: { defaultViewport: { width: 1100, height: 800 } },
         type: "png",

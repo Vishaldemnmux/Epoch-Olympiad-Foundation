@@ -43,7 +43,9 @@ async function fetchDataByMobile(mobNo) {
             "City": schoolData ? schoolData["city"] : "Unknown",
             "State": schoolData ? schoolData["state"] : "Unknown",
             "Country": schoolData ? schoolData["country"] : "Unknown",
-            "School": schoolData ? schoolData["schoolName"] : "Unknown"
+            "School": schoolData ? schoolData["schoolName"] : "Unknown",
+            "Exam Centre": schoolData ? schoolData["examCenterLevel1"] : "Unknown"
+
         };
         return extractedData;
 
