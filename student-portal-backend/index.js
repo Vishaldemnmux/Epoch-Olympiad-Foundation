@@ -14,6 +14,9 @@ const {
   generateAndUploadCertificate,
   fetchImage,
 } = require("./certificateService.js");
+const {
+  fetchStudyMaterial,
+} = require("./studyMaterialService.js");
 const app = express();
 const PORT = process.env.PORT;
 const studentCache = {};
