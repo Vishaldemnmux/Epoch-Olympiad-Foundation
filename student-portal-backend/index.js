@@ -14,9 +14,7 @@ const {
   generateAndUploadCertificate,
   fetchImage,
 } = require("./certificateService.js");
-const {
-  fetchStudyMaterial,
-} = require("./studyMaterialService.js");
+const { fetchStudyMaterial } = require("./studyMaterialService.js");
 const app = express();
 const PORT = process.env.PORT;
 const studentCache = {};
@@ -221,27 +219,28 @@ app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
   fetchImage("certificate", studentName, res);
 });
 
-
-
-
-
 app.post("/fetch-study-material", async (req, res) => {
   const { mobNo } = req.body;
+
   try {
     let studentData;
     if (studentCache[mobNo]) {
       studentData = studentCache[mobNo];
     } else {
       studentData = await fetchDataByMobile(mobNo);
-      
+
       if (!studentData || !studentData["Mob No"]) {
-        return res.status(404).json({ error: "No student found with this mobile number" });
+        return res
+          .status(404)
+          .json({ error: "No student found with this mobile number" });
       }
       studentCache[mobNo] = studentData;
     }
     const studentClass = studentData["Class"];
     if (!studentClass) {
-      return res.status(400).json({ error: "Invalid student details in cache" });
+      return res
+        .status(400)
+        .json({ error: "Invalid student details in cache" });
     }
     const materials = await fetchStudyMaterial(studentClass);
     res.status(200).json({ success: true, data: materials });
@@ -249,8 +248,6 @@ app.post("/fetch-study-material", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

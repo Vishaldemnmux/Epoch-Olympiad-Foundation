@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Download, FileText } from "lucide-react";
-import admitCard from "../assets/admitCard.jpeg";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { BASE_API_URL } from "../Api";
