@@ -4,9 +4,7 @@ import mainLogo from "../assets/main_logo.png";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/authSlice";
-
-// const BASE_API_URL = "http://localhost:5000";
-const BASE_API_URL = "https://nexus-olympiad-foundation.onrender.com"
+import { BASE_API_URL } from "../Api";
 
 const LoginPage = () => {
   const [batch, setBatch] = useState("2024-25");
@@ -29,6 +27,7 @@ const LoginPage = () => {
           authorization: `Bearer ${mobile}`,
         },
       });
+      
 
       if (response.status === 200 && response.data) {
         const studentData = response.data.studentData;

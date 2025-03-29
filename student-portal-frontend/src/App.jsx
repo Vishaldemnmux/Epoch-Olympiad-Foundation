@@ -20,7 +20,6 @@ import Sidebar from "./pages/Sidebar";
 function App() {
   const user = useSelector((state) => state.auth.user);
 
-  console.log(user);
   
 
   return (

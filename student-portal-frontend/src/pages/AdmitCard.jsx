@@ -1,15 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Download, FileText } from "lucide-react";
 import admitCard from "../assets/admitCard.jpeg";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { BASE_API_URL } from "../Api";
 
 const AdmitCard = () => {
+  const student = useSelector((state) => state.auth.user);
   const [selectedOlympiad, setSelectedOlympiad] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
+  const [admitCardImage, setAdmitCardImage] = useState(null);
+
+  const fetchAdmitCard = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_API_URL}/fetch-admit-card/${student["Mob No"]}`,
+        { responseType: "blob" } // Important!
+      );
+
+      if (response.status === 200 && response.data) {
+        const imageUrl = URL.createObjectURL(response.data);
+        setAdmitCardImage(imageUrl);
+      } else {
+        console.error("Failed to fetch admit card.");
+      }
+    } catch (error) {
+      console.error("Error fetching admit card:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAdmitCard();
+  }, [student]);
 
   return (
     <div className=" space-y-3 w-full h-full flex flex-col p-4">
-      
-      
       {/* HEADER */}
       <div className="flex items-center gap-3">
         <div className="bg-blue-100 rounded-full w-9 h-9 flex items-center justify-center">
@@ -43,8 +68,14 @@ const AdmitCard = () => {
 
       {/* Admit Card Container */}
       <div className="flex items-center justify-center">
-        <div className="relative w-full max-w-3xl animate-slideUp transition-all hover:shadow-2xl">
-          <img src={admitCard} alt="Admit Card" className="w-full" />
+        <div className="relative w-full max-w-3xl animate-slideUp transition-all hover:shadow-2xl ">
+          {admitCardImage ? (
+            <img src={admitCardImage} alt="Admit Card" className="w-full" />
+          ) : (
+            <div className="flex items-center justify-center h-64">
+              Loading Admit Card...
+            </div>
+          )}
         </div>
       </div>
 

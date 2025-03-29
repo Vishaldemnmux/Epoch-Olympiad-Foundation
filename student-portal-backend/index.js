@@ -124,9 +124,10 @@ app.post("/logout", (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 });
 
-app.get("/fetch-admit-card", async (req, res) => {
+app.get("/fetch-admit-card/:mobNo", async (req, res) => {
   try {
-    const { mobNo } = req.body;
+    const { mobNo } = req.params;
+
     let studentData;
     if (studentCache[mobNo]) {
       studentData = studentCache[mobNo];
@@ -148,7 +149,7 @@ app.get("/fetch-admit-card", async (req, res) => {
     }
     await fetchAdmitCardFromDB(studentName, res);
   } catch (error) {
-    console.error("❌ Error processing request:", error);
+    console.error("Error processing request:", error);
     res.status(500).json({ error: "Failed to process request" });
   }
 });
@@ -187,18 +188,16 @@ app.post("/generate/:type", async (req, res) => {
       fileName,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error: `Error generating/uploading ${type}`,
-        details: error.message,
-      });
+    res.status(500).json({
+      error: `Error generating/uploading ${type}`,
+      details: error.message,
+    });
   }
 });
 
 // API to Fetch Certificate/Admit Card
-app.get("/:type/", async (req, res) => {
-  const { mobNo } = req.body;
+app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
+  const { mobNo } = req.params;
 
   if (studentCache[mobNo]) {
     studentData = studentCache[mobNo];
@@ -216,7 +215,7 @@ app.get("/:type/", async (req, res) => {
   if (!studentName) {
     return res.status(400).json({ error: "Invalid student details in cache" });
   }
-  fetchImage(req.params.type, studentName, res);
+  fetchImage("certificate", studentName, res);
 });
 
 app.listen(PORT, () => {

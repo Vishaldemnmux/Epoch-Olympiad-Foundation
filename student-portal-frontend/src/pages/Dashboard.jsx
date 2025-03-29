@@ -48,7 +48,6 @@ const AccordionSection = ({ title, children }) => {
 
 const Dashboard = () => {
   const student = useSelector((state) => state.auth.user);
-  console.log(student);
 
   return (
     <div className="flex-1 w-full min-h-screen lg:p-8 p-2 bg-gray-50">
