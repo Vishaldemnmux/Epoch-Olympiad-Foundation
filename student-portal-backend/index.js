@@ -18,6 +18,10 @@ const { fetchStudyMaterial } = require("./studyMaterialService.js");
 const app = express();
 const PORT = process.env.PORT;
 const studentCache = {};
+
+
+
+
 app.use(
   cors({
     origin: ["http://localhost:3000", "https://epoch-olympiad-foundation.vercel.app"],
@@ -196,7 +200,7 @@ app.post("/generate/:type", async (req, res) => {
   }
 });
 
-// API to Fetch Certificate/Admit Card
+// API to Fetch Certificate
 app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
   const { mobNo } = req.params;
 
