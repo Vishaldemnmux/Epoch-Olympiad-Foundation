@@ -11,7 +11,7 @@ const {
   fetchAdmitCardFromDB,
 } = require("./admitCardService.js");
 const {
-  generateAndUploadCertificate,
+  generateAndUploadDocument,
   fetchImage,
 } = require("./certificateService.js");
 const { fetchStudyMaterial } = require("./studyMaterialService.js");
@@ -187,7 +187,7 @@ app.post("/generate/:type", async (req, res) => {
   }
 
   try {
-    const fileName = await generateAndUploadCertificate(studentData, type);
+    const fileName = await generateAndUploadDocument(studentData, type);
     res.json({
       message: `${type} generated and uploaded successfully!`,
       fileName,
