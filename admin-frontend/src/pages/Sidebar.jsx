@@ -96,14 +96,14 @@ const Sidebar = () => {
             icon={<User2Icon size={20} />}
             text="UPLOAD STUDENTS"
             delay={400}
-            href="/upload-student-data"
+            href="/uploadStudentData"
             onClick={closeSidebar}
           />
           <MenuItem
             icon={<SchoolIcon size={20} />}
             text="UPLOAD SCHOOLS"
             delay={500}
-            href="/upload-school-data"
+            href="/uploadSchoolData"
             onClick={closeSidebar}
           />
         </nav>

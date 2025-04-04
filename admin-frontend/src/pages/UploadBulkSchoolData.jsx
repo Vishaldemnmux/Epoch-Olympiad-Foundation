@@ -1,16 +1,10 @@
-import React, { useState } from "react";
-import {
-  Upload,
-  FileSpreadsheet,
-  CheckCircle2,
-  AlertCircle,
-  Download,
-} from "lucide-react"; // Make sure this package is installed: `npm install lucide-react`
-import { BASE_URL } from "../Api";
-import axios from "axios";
+import React, {useState} from 'react'
+import axios from 'axios';
+import { BASE_URL } from '../Api';
+import { Download, FileSpreadsheet, Upload } from 'lucide-react';
 
-const UploadSchools = () => {
-  const [file, setFile] = useState(null);
+const UploadBulkSchoolData = () => {
+    const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -233,6 +227,6 @@ const UploadSchools = () => {
       </div>
     </div>
   );
-};
+}
 
-export default UploadSchools;
+export default UploadBulkSchoolData

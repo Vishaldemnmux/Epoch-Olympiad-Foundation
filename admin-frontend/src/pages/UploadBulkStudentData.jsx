@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { BASE_URL } from "../Api";
 
-const UploadStudents = () => {
+const UploadBulkStudentData = () => {
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -239,4 +239,4 @@ const UploadStudents = () => {
   );
 };
 
-export default UploadStudents;
+export default UploadBulkStudentData;
