@@ -265,8 +265,6 @@ app.post("/fetch-study-material", async (req, res) => {
 });
 
 app.post("/upload", upload.single("file"), async (req, res) => {
-  console.log(req.file);
-  console.log("/upload CHAL RAHA HAI");
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
   }
@@ -281,8 +279,6 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 });
 
 app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
-  console.log(req.file);
-  console.log("/upload-schooldata CHAL RAHA HAI");
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
   }
@@ -371,6 +367,10 @@ app.post("/add-school", async (req, res) => {
     console.error("❌ Error adding school:", error);
     res.status(500).json({ message: "Error adding school", error });
   }
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ message: "Server is healthy" });
 });
 
 app.listen(PORT, () => {

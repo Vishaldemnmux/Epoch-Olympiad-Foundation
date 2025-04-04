@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import axios from 'axios';
 import { BASE_URL } from '../Api';
-import { Download, FileSpreadsheet, Upload } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Download, FileSpreadsheet, Upload } from 'lucide-react';
 
 const UploadBulkSchoolData = () => {
     const [file, setFile] = useState(null);
