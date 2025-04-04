@@ -137,6 +137,14 @@ app.post("/logout", (req, res) => {
     });
   }
 
+  const uploadsDir = path.join(__dirname, "uploads");
+  if (fs.existsSync(uploadsDir)) {
+    fs.readdirSync(uploadsDir).forEach((file) => {
+      const filePath = path.join(uploadsDir, file);
+      fs.unlinkSync(filePath);
+    });
+  }
+
   if (mobNo && studentCache[mobNo]) {
     delete studentCache[mobNo];
   }
@@ -238,6 +246,8 @@ app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
   fetchImage("certificate", studentName, res);
 });
 
+
+
 app.post("/fetch-study-material", async (req, res) => {
   const { mobNo } = req.body;
 
@@ -268,6 +278,8 @@ app.post("/fetch-study-material", async (req, res) => {
   }
 });
 
+
+
 app.post("/upload", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -282,6 +294,8 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
+
+
 app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -295,36 +309,16 @@ app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   }
 });
 
-// Add Student
-// app.post("/add-student", async (req, res) => {
-//   try {
-//     const newStudent = new Student(req.body);
-//     await newStudent.save();
-//     res.status(201).json({ message: "Student added successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error adding student", error });
-//   }
-// });
+
 
 app.post("/add-student", async (req, res) => {
+
   try {
-    console.log(
-      "📩 Incoming Request (Student):",
-      JSON.stringify(req.body, null, 2)
-    );
-    if (req.body["Mob No"]) {
-      req.body["Mob No"] = Number(req.body["Mob No"]);
-    }
+
 
     const newStudent = new Student(req.body);
     const savedStudent = await newStudent.save();
 
-    console.log("✅ Student Added Successfully!");
-    console.log(
-      "📂 Collection Name:",
-      savedStudent.constructor.collection.name
-    );
-    console.log("🆔 Document ID:", savedStudent._id);
 
     res.status(201).json({
       message: "Student added successfully",
@@ -337,30 +331,16 @@ app.post("/add-student", async (req, res) => {
   }
 });
 
-// //Add School
-// app.post("/add-school", async (req, res) => {
-//   try {
-//     const newSchool = new School(req.body);
-//     await newSchool.save();
-//     res.status(201).json({ message: "School added successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error adding school", error });
-//   }
-// });
+
 
 app.post("/add-school", async (req, res) => {
+
   try {
-    console.log(
-      "📩 Incoming Request (School):",
-      JSON.stringify(req.body, null, 2)
-    );
+
 
     const newSchool = new School(req.body);
     const savedSchool = await newSchool.save();
 
-    console.log("✅ School Added Successfully!");
-    console.log("📂 Collection Name:", savedSchool.constructor.collection.name);
-    console.log("🆔 Document ID:", savedSchool._id);
 
     res.status(201).json({
       message: "School added successfully",
