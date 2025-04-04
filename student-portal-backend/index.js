@@ -34,11 +34,7 @@ const upload = multer({ dest: "uploads/" });
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://epoch-olympiad-foundation.vercel.app",
-      "https://epoch-olympiad-foundation-admin-dashboard.vercel.app",
-    ],
+    origin: "*",
   })
 );
 app.use(express.json());
@@ -269,13 +265,15 @@ app.post("/fetch-study-material", async (req, res) => {
 });
 
 app.post("/upload", upload.single("file"), async (req, res) => {
+  console.log(req.file);
+  console.log("/upload CHAL RAHA HAI");
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
   }
 
   try {
     const response = await processCSV(req.file.path);
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     console.error("Error inserting data:", error);
     res.status(500).json({ message: "Error uploading data" });
@@ -283,13 +281,15 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 });
 
 app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
+  console.log(req.file);
+  console.log("/upload-schooldata CHAL RAHA HAI");
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
   }
 
   try {
     const response = await uploadSchoolData(req.file.path);
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     res.status(500).json(error);
   }
