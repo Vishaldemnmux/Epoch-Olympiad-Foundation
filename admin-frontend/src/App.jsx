@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./pages/Sidebar";
-import UploadSchools from "./pages/uploadSchools";
-import UploadStudents from "./pages/uploadStudents";
+import UploadSchools from "./pages/UploadSchools";
+import UploadStudents from "./pages/UploadStudents";
 
 const App = () => {
   return (
@@ -11,8 +11,8 @@ const App = () => {
         <Routes>
           <Route element={<Sidebar />}>
             <Route path="/" element={<div>HOME</div>} />
-            <Route path="/upload-student-data" element={<UploadStudents />} />
-            <Route path="/upload-school-data" element={<UploadSchools />} />
+            <Route path="/uploadStudentData" element={<UploadStudents />} />
+            <Route path="/uploadSchoolData" element={<UploadSchools />} />
           </Route>
         </Routes>
       </Router>
