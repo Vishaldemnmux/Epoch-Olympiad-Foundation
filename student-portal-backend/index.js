@@ -353,6 +353,96 @@ app.post("/add-school", async (req, res) => {
   }
 });
 
+
+
+app.delete("/school/:schoolCode", async (req, res) => {
+  try {
+    const { schoolCode } = req.params;
+    const deletedSchool = await School.findOneAndDelete({ "School Code": schoolCode });
+
+    if (!deletedSchool) {
+      return res.status(404).json({ message: "School not found" });
+    }
+
+    res.json({ message: "School deleted successfully", deletedSchool });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting school", error });
+  }
+});
+
+
+app.delete("/student", async (req, res) => {
+  try {
+    const { rollNo, studentClass } = req.body; 
+
+    const deletedStudent = await Student.findOneAndDelete({
+      "Roll No": { "": rollNo }, 
+      "Class": studentClass
+    });
+
+    if (!deletedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json({ message: "Student deleted successfully", deletedStudent });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting student", error });
+  }
+});
+
+
+
+
+app.put("/student", async (req, res) => {
+  try {
+    const { rollNo, studentClass, ...updateFields } = req.body; 
+
+    if (!rollNo || !studentClass) {
+      return res.status(400).json({ message: "Roll No and Class are required" });
+    }
+
+    const updatedStudent = await Student.findOneAndUpdate(
+      { "Roll No": { "": rollNo }, "Class": studentClass },
+      { $set: updateFields }, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json({ message: "Student updated successfully", updatedStudent });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating student", error });
+  }
+});
+
+
+app.put("/school", async (req, res) => {
+  try {
+    const { schoolCode, ...updateFields } = req.body; 
+
+    if (!schoolCode) {
+      return res.status(400).json({ message: "School Code is required" });
+    }
+
+    const updatedSchool = await School.findOneAndUpdate(
+      { "School Code": schoolCode },
+      { $set: updateFields }, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedSchool) {
+      return res.status(404).json({ message: "School not found" });
+    }
+
+    res.json({ message: "School updated successfully", updatedSchool });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating school", error });
+  }
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
