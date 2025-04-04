@@ -73,6 +73,8 @@ const UploadStudents = () => {
         },
       });
 
+      console.log(response.data);
+
       if (response.status === 200) {
         setUploadStatus({
           type: "success",
@@ -97,7 +99,7 @@ const UploadStudents = () => {
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-4xl w-full mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Bulk Student Data Upload 
+            Bulk Student Data Upload
           </h1>
           <p className="text-gray-600">
             Upload a list of students using the official CSV template.

@@ -67,11 +67,17 @@ const UploadSchools = () => {
       const formData = new FormData();
       formData.append("file", file); // Add the file to FormData
 
-      const response = await axios.post(`${BASE_URL}/upload-schooldata`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data' // Important for file uploads
+      const response = await axios.post(
+        `${BASE_URL}/upload-schooldata`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Important for file uploads
+          },
         }
-      });
+      );
+
+      console.log(response.data);
 
       if (response.status === 200) {
         setUploadStatus({
@@ -85,7 +91,8 @@ const UploadSchools = () => {
     } catch (error) {
       setUploadStatus({
         type: "error",
-        message: error.response?.data?.message || "Failed to upload school data",
+        message:
+          error.response?.data?.message || "Failed to upload school data",
       });
     }
   };
