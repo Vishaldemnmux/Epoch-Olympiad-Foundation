@@ -355,9 +355,9 @@ app.post("/add-school", async (req, res) => {
 
 
 
-app.delete("/school/:schoolCode", async (req, res) => {
+app.delete("/school", async (req, res) => {
   try {
-    const { schoolCode } = req.params;
+    const { schoolCode } = req.body;
     const deletedSchool = await School.findOneAndDelete({ "School Code": schoolCode });
 
     if (!deletedSchool) {
@@ -395,15 +395,18 @@ app.delete("/student", async (req, res) => {
 
 app.put("/student", async (req, res) => {
   try {
-    const { rollNo, studentClass, ...updateFields } = req.body; 
+    let { rollNo, studentClass, ...updateFields } = req.body;
 
     if (!rollNo || !studentClass) {
       return res.status(400).json({ message: "Roll No and Class are required" });
     }
 
+    studentClass = studentClass.toString();
+    rollNo = rollNo.toString();
+
     const updatedStudent = await Student.findOneAndUpdate(
-      { "Roll No": { "": rollNo }, "Class": studentClass },
-      { $set: updateFields }, 
+      { "Roll No": { "": rollNo }, "Class ": studentClass },
+      { $set: updateFields },
       { new: true, runValidators: true }
     );
 
@@ -413,18 +416,21 @@ app.put("/student", async (req, res) => {
 
     res.json({ message: "Student updated successfully", updatedStudent });
   } catch (error) {
-    res.status(500).json({ message: "Error updating student", error });
+    console.error("Error updating student:", error);
+    res.status(500).json({ message: "Error updating student", error: error.message || error });
   }
 });
 
 
 app.put("/school", async (req, res) => {
   try {
-    const { schoolCode, ...updateFields } = req.body; 
+    let { schoolCode, ...updateFields } = req.body; 
 
     if (!schoolCode) {
       return res.status(400).json({ message: "School Code is required" });
     }
+    
+    schoolCode = schoolCode.toString();
 
     const updatedSchool = await School.findOneAndUpdate(
       { "School Code": schoolCode },
