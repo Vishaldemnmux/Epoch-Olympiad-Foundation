@@ -34,7 +34,11 @@ const upload = multer({ dest: "uploads/" });
 
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "http://localhost:3000",
+      "https://epoch-olympiad-foundation.vercel.app",
+      "https://epoch-olympiad-foundation-admin-dashboard.vercel.app",
+    ],
   })
 );
 app.use(express.json());
