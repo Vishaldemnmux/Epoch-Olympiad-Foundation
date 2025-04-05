@@ -4,11 +4,12 @@ const path = require("path");
 const mongoose = require("mongoose");
 const { MongoClient, GridFSBucket } = require("mongodb");
 const mongoURI = process.env.MONGO_URI;
+const dataBaseName = process.env.DATABASE_NAME;
 
 async function databaseConnection() {
   const client = new MongoClient(mongoURI);
   await client.connect();
-  return { conn: client.db("test"), status: "success" };
+  return { conn: client.db(dataBaseName), status: "success" };
 }
 
 async function generateAdmitCard(info) {
@@ -201,6 +202,7 @@ async function fetchAdmitCardFromDB(studentName, res) {
     res.status(500).json({ error: "Failed to fetch admit card" });
   }
 }
+
 
 module.exports = {
   generateAdmitCard,

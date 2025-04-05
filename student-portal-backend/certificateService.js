@@ -124,7 +124,7 @@ const mongoURI = process.env.MONGO_URI;
 
 
 async function getMongoBucket(type) {
-  const dbName = "test";
+  const dbName = process.env.DATABASE_NAME;
   const client = await MongoClient.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

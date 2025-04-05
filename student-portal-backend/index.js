@@ -133,6 +133,14 @@ app.post("/logout", (req, res) => {
     });
   }
 
+  const uploadsDir = path.join(__dirname, "uploads");
+  if (fs.existsSync(uploadsDir)) {
+    fs.readdirSync(uploadsDir).forEach((file) => {
+      const filePath = path.join(uploadsDir, file);
+      fs.unlinkSync(filePath);
+    });
+  }
+
   if (mobNo && studentCache[mobNo]) {
     delete studentCache[mobNo];
   }
@@ -234,6 +242,8 @@ app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
   fetchImage("certificate", studentName, res);
 });
 
+
+
 app.post("/fetch-study-material", async (req, res) => {
   const { mobNo } = req.body;
 
@@ -264,6 +274,8 @@ app.post("/fetch-study-material", async (req, res) => {
   }
 });
 
+
+
 app.post("/upload", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -278,6 +290,8 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
+
+
 app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -291,36 +305,16 @@ app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   }
 });
 
-// Add Student
-// app.post("/add-student", async (req, res) => {
-//   try {
-//     const newStudent = new Student(req.body);
-//     await newStudent.save();
-//     res.status(201).json({ message: "Student added successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error adding student", error });
-//   }
-// });
+
 
 app.post("/add-student", async (req, res) => {
+
   try {
-    console.log(
-      "📩 Incoming Request (Student):",
-      JSON.stringify(req.body, null, 2)
-    );
-    if (req.body["Mob No"]) {
-      req.body["Mob No"] = Number(req.body["Mob No"]);
-    }
+
 
     const newStudent = new Student(req.body);
     const savedStudent = await newStudent.save();
 
-    console.log("✅ Student Added Successfully!");
-    console.log(
-      "📂 Collection Name:",
-      savedStudent.constructor.collection.name
-    );
-    console.log("🆔 Document ID:", savedStudent._id);
 
     res.status(201).json({
       message: "Student added successfully",
@@ -333,30 +327,16 @@ app.post("/add-student", async (req, res) => {
   }
 });
 
-// //Add School
-// app.post("/add-school", async (req, res) => {
-//   try {
-//     const newSchool = new School(req.body);
-//     await newSchool.save();
-//     res.status(201).json({ message: "School added successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error adding school", error });
-//   }
-// });
+
 
 app.post("/add-school", async (req, res) => {
+
   try {
-    console.log(
-      "📩 Incoming Request (School):",
-      JSON.stringify(req.body, null, 2)
-    );
+
 
     const newSchool = new School(req.body);
     const savedSchool = await newSchool.save();
 
-    console.log("✅ School Added Successfully!");
-    console.log("📂 Collection Name:", savedSchool.constructor.collection.name);
-    console.log("🆔 Document ID:", savedSchool._id);
 
     res.status(201).json({
       message: "School added successfully",
@@ -369,9 +349,101 @@ app.post("/add-school", async (req, res) => {
   }
 });
 
-app.get("/health", (req, res) => {
-  res.status(200).json({ message: "Server is healthy" });
+
+
+app.delete("/school", async (req, res) => {
+  try {
+    const { schoolCode } = req.body;
+    const deletedSchool = await School.findOneAndDelete({ "School Code": schoolCode });
+
+    if (!deletedSchool) {
+      return res.status(404).json({ message: "School not found" });
+    }
+
+    res.json({ message: "School deleted successfully", deletedSchool });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting school", error });
+  }
 });
+
+
+app.delete("/student", async (req, res) => {
+  try {
+    const { rollNo, studentClass } = req.body; 
+
+    const deletedStudent = await Student.findOneAndDelete({
+      "Roll No": { "": rollNo }, 
+      "Class": studentClass
+    });
+
+    if (!deletedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json({ message: "Student deleted successfully", deletedStudent });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting student", error });
+  }
+});
+
+
+
+
+app.put("/student", async (req, res) => {
+  try {
+    let { rollNo, studentClass, ...updateFields } = req.body;
+
+    if (!rollNo || !studentClass) {
+      return res.status(400).json({ message: "Roll No and Class are required" });
+    }
+
+    studentClass = studentClass.toString();
+    rollNo = rollNo.toString();
+
+    const updatedStudent = await Student.findOneAndUpdate(
+      { "Roll No": { "": rollNo }, "Class ": studentClass },
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json({ message: "Student updated successfully", updatedStudent });
+  } catch (error) {
+    console.error("Error updating student:", error);
+    res.status(500).json({ message: "Error updating student", error: error.message || error });
+  }
+});
+
+
+app.put("/school", async (req, res) => {
+  try {
+    let { schoolCode, ...updateFields } = req.body; 
+
+    if (!schoolCode) {
+      return res.status(400).json({ message: "School Code is required" });
+    }
+    
+    schoolCode = schoolCode.toString();
+
+    const updatedSchool = await School.findOneAndUpdate(
+      { "School Code": schoolCode },
+      { $set: updateFields }, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedSchool) {
+      return res.status(404).json({ message: "School not found" });
+    }
+
+    res.json({ message: "School updated successfully", updatedSchool });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating school", error });
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
