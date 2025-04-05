@@ -135,6 +135,13 @@ const Sidebar = () => {
             href="/updateStudent"
             onClick={closeSidebar}
           />
+           <MenuItem
+            icon={<SchoolIcon size={20} />}
+            text="ALL SCHOOLS"
+            delay={500}
+            href="/allSchools"
+            onClick={closeSidebar}
+          />
         </nav>
 
         <div className="absolute bottom-0 left-0 w-full border-t border-blue-800 bg-[#002d69]">
