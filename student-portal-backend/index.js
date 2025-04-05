@@ -50,6 +50,7 @@ app.use(bodyParser.json());
 //   res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
 // });
 
+//API to fetch student details
 app.get("/get-student", async (req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -83,75 +84,9 @@ app.get("/get-student", async (req, res) => {
   }
 });
 
-app.post("/admit-card", async (req, res) => {
-  const { mobNo } = req.body;
 
-  if (!mobNo) {
-    return res.status(400).json({ error: "Mobile number is required" });
-  }
 
-  let studentData;
-
-  if (studentCache[mobNo]) {
-    studentData = studentCache[mobNo];
-  } else {
-    studentData = await fetchDataByMobile(mobNo);
-    if (!studentData || !studentData["Mob No"]) {
-      return res
-        .status(404)
-        .json({ error: "No student found with this mobile number" });
-    }
-    studentCache[mobNo] = studentData;
-  }
-  try {
-    const result = await generateAdmitCard(studentData);
-
-    if (!result.success) {
-      return res.status(500).json({ error: result.error });
-    }
-
-    await dbConnection(); // Ensure DB is connected
-
-    await uploadAdmitCard(studentData, res);
-
-    if (!res.headersSent) {
-      return res.status(200).json({
-        message: "Admit card generated and stored successfully",
-        path: result.path,
-      });
-    }
-  } catch (error) {
-    if (!res.headersSent) {
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  }
-});
-
-app.post("/logout", (req, res) => {
-  const { mobNo } = req.body;
-  const outputDir = path.join(__dirname, "outputs");
-  if (fs.existsSync(outputDir)) {
-    fs.readdirSync(outputDir).forEach((file) => {
-      const filePath = path.join(outputDir, file);
-      fs.unlinkSync(filePath); // Delete file
-    });
-  }
-
-  const uploadsDir = path.join(__dirname, "uploads");
-  if (fs.existsSync(uploadsDir)) {
-    fs.readdirSync(uploadsDir).forEach((file) => {
-      const filePath = path.join(uploadsDir, file);
-      fs.unlinkSync(filePath);
-    });
-  }
-
-  if (mobNo && studentCache[mobNo]) {
-    delete studentCache[mobNo];
-  }
-
-  res.status(200).json({ message: "Logged out successfully" });
-});
-
+//API to fetch admit-card
 app.get("/fetch-admit-card/:mobNo", async (req, res) => {
   try {
     const { mobNo } = req.params;
@@ -182,7 +117,81 @@ app.get("/fetch-admit-card/:mobNo", async (req, res) => {
   }
 });
 
-// API to Generate & Upload Certificate/Admit Card
+
+
+// API to Fetch Certificate
+app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
+  const { mobNo } = req.params;
+
+  if (studentCache[mobNo]) {
+    studentData = studentCache[mobNo];
+  } else {
+    studentData = await fetchDataByMobile(mobNo);
+    if (!studentData || !studentData["Mob No"]) {
+      return res
+        .status(404)
+        .json({ error: "No student found with this mobile number" });
+    }
+    studentCache[mobNo] = studentData;
+  }
+
+  const studentName = studentData["Student's Name"];
+  if (!studentName) {
+    return res.status(400).json({ error: "Invalid student details in cache" });
+  }
+  fetchImage("certificate", studentName, res);
+});
+
+
+
+// API to Generate & Upload AdmitCard
+app.post("/admit-card", async (req, res) => {
+  const { mobNo } = req.body;
+
+  if (!mobNo) {
+    return res.status(400).json({ error: "Mobile number is required" });
+  }
+
+  let studentData;
+
+  if (studentCache[mobNo]) {
+    studentData = studentCache[mobNo];
+  } else {
+    studentData = await fetchDataByMobile(mobNo);
+    if (!studentData || !studentData["Mob No"]) {
+      return res
+        .status(404)
+        .json({ error: "No student found with this mobile number" });
+    }
+    studentCache[mobNo] = studentData;
+  }
+  try {
+    const result = await generateAdmitCard(studentData);
+
+    if (!result.success) {
+      return res.status(500).json({ error: result.error });
+    }
+
+    await dbConnection(); 
+
+    await uploadAdmitCard(studentData, res);
+
+    if (!res.headersSent) {
+      return res.status(200).json({
+        message: "Admit card generated and stored successfully",
+        path: result.path,
+      });
+    }
+  } catch (error) {
+    if (!res.headersSent) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
+
+
+
+// API to Generate & Upload Certificate
 app.post("/generate/:type", async (req, res) => {
   const { type } = req.params;
   const { mobNo } = req.body;
@@ -223,31 +232,9 @@ app.post("/generate/:type", async (req, res) => {
   }
 });
 
-// API to Fetch Certificate
-app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
-  const { mobNo } = req.params;
-
-  if (studentCache[mobNo]) {
-    studentData = studentCache[mobNo];
-  } else {
-    studentData = await fetchDataByMobile(mobNo);
-    if (!studentData || !studentData["Mob No"]) {
-      return res
-        .status(404)
-        .json({ error: "No student found with this mobile number" });
-    }
-    studentCache[mobNo] = studentData;
-  }
-
-  const studentName = studentData["Student's Name"];
-  if (!studentName) {
-    return res.status(400).json({ error: "Invalid student details in cache" });
-  }
-  fetchImage("certificate", studentName, res);
-});
 
 
-
+//API to Fetch Study Material
 app.post("/fetch-study-material", async (req, res) => {
   const { mobNo } = req.body;
 
@@ -280,6 +267,7 @@ app.post("/fetch-study-material", async (req, res) => {
 
 
 
+//API to upload studentdata in bulk
 app.post("/upload", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -296,6 +284,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
 
 
+//API to upload schooldata in bulk
 app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -311,6 +300,7 @@ app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
 
 
 
+//API to add single student
 app.post("/add-student", async (req, res) => {
 
   try {
@@ -333,6 +323,7 @@ app.post("/add-student", async (req, res) => {
 
 
 
+//API to add single school
 app.post("/add-school", async (req, res) => {
 
   try {
@@ -355,6 +346,7 @@ app.post("/add-school", async (req, res) => {
 
 
 
+//ApI to Delete single school
 app.delete("/school", async (req, res) => {
   try {
     const { schoolCode } = req.body;
@@ -371,6 +363,8 @@ app.delete("/school", async (req, res) => {
 });
 
 
+
+//ApI to Delete single student
 app.delete("/student", async (req, res) => {
   try {
     const { rollNo, studentClass } = req.body; 
@@ -392,7 +386,7 @@ app.delete("/student", async (req, res) => {
 
 
 
-
+//API to update single student
 app.put("/student", async (req, res) => {
   try {
     let { rollNo, studentClass, ...updateFields } = req.body;
@@ -422,6 +416,8 @@ app.put("/student", async (req, res) => {
 });
 
 
+
+//API to update single school
 app.put("/school", async (req, res) => {
   try {
     let { schoolCode, ...updateFields } = req.body; 
@@ -447,6 +443,34 @@ app.put("/school", async (req, res) => {
     res.status(500).json({ message: "Error updating school", error });
   }
 });
+
+
+
+app.post("/logout", (req, res) => {
+  const { mobNo } = req.body;
+  const outputDir = path.join(__dirname, "outputs");
+  if (fs.existsSync(outputDir)) {
+    fs.readdirSync(outputDir).forEach((file) => {
+      const filePath = path.join(outputDir, file);
+      fs.unlinkSync(filePath); // Delete file
+    });
+  }
+
+  const uploadsDir = path.join(__dirname, "uploads");
+  if (fs.existsSync(uploadsDir)) {
+    fs.readdirSync(uploadsDir).forEach((file) => {
+      const filePath = path.join(uploadsDir, file);
+      fs.unlinkSync(filePath);
+    });
+  }
+
+  if (mobNo && studentCache[mobNo]) {
+    delete studentCache[mobNo];
+  }
+
+  res.status(200).json({ message: "Logged out successfully" });
+});
+
 
 
 app.listen(PORT, () => {

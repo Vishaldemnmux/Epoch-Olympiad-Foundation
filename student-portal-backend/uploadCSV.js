@@ -15,7 +15,7 @@ const processCSV = async (filePath) => {
             .on("end", async () => {
                 try {
                     await Student.insertMany(results);
-                    fs.unlinkSync(filePath); // Delete file after processing
+                    fs.unlinkSync(filePath); 
                     resolve({ message: "CSV data uploaded successfully", count: results.length });
                 } catch (error) {
                     reject(error);
