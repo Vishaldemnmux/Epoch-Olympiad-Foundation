@@ -7,6 +7,7 @@ const dbName = process.env.DATABASE_NAME
 
 async function getCollection(collectionName) {
     const client = new MongoClient(mongoURI);
+
     await client.connect();
     
     const database = client.db(dbName);  
@@ -40,8 +41,8 @@ async function fetchDataByMobile(mobNo) {
 
         const extractedData = {
             "Roll No": rollNo,
-            "Class": data?.["Class".trim()]?.trim() || "Unknown",                      
-            "Student's Name": data?.["Student Name".trim()]?.trim() || "Unknown", 
+            "Class": data?.["Class "]?.trim?.() || "Unknown",
+            "Student's Name": data?.["Student Name "]?.trim?.() || "Unknown",
             "Section": data["Section"],
             "Mother's Name": data["Mother Name"],
             "Father's Name": data["Father Name"],
@@ -77,6 +78,8 @@ async function fetchDataByMobile(mobNo) {
     } catch (error) {
         console.error("❌ Error fetching data from MongoDB:", error);
         return { error: "Failed to fetch data", details: error.message };
+    } finally {
+        await client.close();
     }
 }
 
@@ -95,7 +98,9 @@ async function fetchSchoolData(code) {
     } catch (error) {
         console.error("Error fetching school data:", error);
         return { error: "Failed to fetch school data", details: error.message };
-    } 
+    }  finally {
+        await client.close();
+    }
 }
 
 

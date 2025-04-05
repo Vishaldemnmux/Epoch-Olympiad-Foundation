@@ -5,7 +5,7 @@ mongoose
   .then(() => {
     console.log("MongoDB Connected");
   })
-  .catch((err) => console.error("MongoDB Connection Error:", err));
+  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 const studyMaterialSchema = new mongoose.Schema({
   id: Number,
@@ -41,4 +41,4 @@ async function fetchStudyMaterial(studentClass) {
   }
 }
 
-module.exports = { fetchStudyMaterial };
+module.exports = { fetchStudyMaterial, mongoose };
