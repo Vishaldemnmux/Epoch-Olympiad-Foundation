@@ -22,8 +22,9 @@ const SingleSchoolForm = () => {
 
     try {
       const response = await axios.post(`${BASE_URL}/add-school`, data);
+      console.log(response.data);
       alert(response.data.message);
-      reset();
+      // reset();
     } catch (error) {
       console.error("❌ Error adding school:", error);
       alert("Failed to add school. Please check inputs.");

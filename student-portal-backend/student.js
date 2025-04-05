@@ -102,6 +102,4 @@ const studentSchema = new mongoose.Schema({
 
  const Student = mongoose.models.Student || mongoose.model("Student", studentSchema, "student-data");
 
- console.log("Collection Name:", Student.collection.name);
-
  module.exports = Student ;

@@ -242,8 +242,6 @@ app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
   fetchImage("certificate", studentName, res);
 });
 
-
-
 app.post("/fetch-study-material", async (req, res) => {
   const { mobNo } = req.body;
 
@@ -274,8 +272,6 @@ app.post("/fetch-study-material", async (req, res) => {
   }
 });
 
-
-
 app.post("/upload", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -290,8 +286,6 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
-
-
 app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -305,16 +299,10 @@ app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   }
 });
 
-
-
 app.post("/add-student", async (req, res) => {
-
   try {
-
-
     const newStudent = new Student(req.body);
     const savedStudent = await newStudent.save();
-
 
     res.status(201).json({
       message: "Student added successfully",
@@ -327,18 +315,12 @@ app.post("/add-student", async (req, res) => {
   }
 });
 
-
-
 app.post("/add-school", async (req, res) => {
-
   try {
-
-
     const newSchool = new School(req.body);
     const savedSchool = await newSchool.save();
 
-
-    res.status(201).json({
+    return res.status(201).json({
       message: "School added successfully",
       collection: savedSchool.constructor.collection.name,
       documentId: savedSchool._id,
@@ -349,12 +331,12 @@ app.post("/add-school", async (req, res) => {
   }
 });
 
-
-
 app.delete("/school", async (req, res) => {
   try {
     const { schoolCode } = req.body;
-    const deletedSchool = await School.findOneAndDelete({ "School Code": schoolCode });
+    const deletedSchool = await School.findOneAndDelete({
+      "School Code": schoolCode,
+    });
 
     if (!deletedSchool) {
       return res.status(404).json({ message: "School not found" });
@@ -366,14 +348,13 @@ app.delete("/school", async (req, res) => {
   }
 });
 
-
 app.delete("/student", async (req, res) => {
   try {
-    const { rollNo, studentClass } = req.body; 
+    const { rollNo, studentClass } = req.body;
 
     const deletedStudent = await Student.findOneAndDelete({
-      "Roll No": { "": rollNo }, 
-      "Class": studentClass
+      "Roll No": { "": rollNo },
+      Class: studentClass,
     });
 
     if (!deletedStudent) {
@@ -386,15 +367,14 @@ app.delete("/student", async (req, res) => {
   }
 });
 
-
-
-
 app.put("/student", async (req, res) => {
   try {
     let { rollNo, studentClass, ...updateFields } = req.body;
 
     if (!rollNo || !studentClass) {
-      return res.status(400).json({ message: "Roll No and Class are required" });
+      return res
+        .status(400)
+        .json({ message: "Roll No and Class are required" });
     }
 
     studentClass = studentClass.toString();
@@ -413,24 +393,26 @@ app.put("/student", async (req, res) => {
     res.json({ message: "Student updated successfully", updatedStudent });
   } catch (error) {
     console.error("Error updating student:", error);
-    res.status(500).json({ message: "Error updating student", error: error.message || error });
+    res.status(500).json({
+      message: "Error updating student",
+      error: error.message || error,
+    });
   }
 });
 
-
 app.put("/school", async (req, res) => {
   try {
-    let { schoolCode, ...updateFields } = req.body; 
+    let { schoolCode, ...updateFields } = req.body;
 
     if (!schoolCode) {
       return res.status(400).json({ message: "School Code is required" });
     }
-    
+
     schoolCode = schoolCode.toString();
 
     const updatedSchool = await School.findOneAndUpdate(
       { "School Code": schoolCode },
-      { $set: updateFields }, 
+      { $set: updateFields },
       { new: true, runValidators: true }
     );
 
@@ -444,6 +426,9 @@ app.put("/school", async (req, res) => {
   }
 });
 
+app.get("/health", async (req, res) => {
+  return res.status(200).json({ message: "Server is healthy" });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
