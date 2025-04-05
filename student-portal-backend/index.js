@@ -317,8 +317,12 @@ app.post("/add-student", async (req, res) => {
 
 app.post("/add-school", async (req, res) => {
   try {
+    console.log("YAHAN CONTROLLER CHAL GAYA");
+
     const newSchool = new School(req.body);
     const savedSchool = await newSchool.save();
+
+    console.log(saveSchool._id);
 
     return res.status(201).json({
       message: "School added successfully",
@@ -431,5 +435,5 @@ app.get("/health", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is UP and RUNNING`);
 });

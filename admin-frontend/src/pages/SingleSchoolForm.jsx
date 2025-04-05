@@ -22,6 +22,7 @@ const SingleSchoolForm = () => {
 
     try {
       const response = await axios.post(`${BASE_URL}/add-school`, data);
+      console.log("ISPE REQUEST GAYI HAI", `${BASE_URL}/add-school`)
       console.log(response.data);
       alert(response.data.message);
       // reset();
