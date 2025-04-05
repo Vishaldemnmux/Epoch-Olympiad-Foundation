@@ -1,9 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Download, FileText } from "lucide-react";
-import certificate from "../assets/certificates.png";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { BASE_API_URL } from "../Api";
 
 const Certificates = () => {
+  const student = useSelector((state) => state.auth.user);
   const [selectedLevel, setSelectedLevel] = useState("IMO BASIC LEVEL");
+  const [certificate, setCertificate] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchCertificate = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${BASE_API_URL}/fetch-ceritficate/${student["Mob No"]}`,
+        { responseType: "blob" } // Important!
+      );
+
+      if (response.status === 200 && response.data) {
+        const imageUrl = URL.createObjectURL(response.data);
+        setCertificate(imageUrl);
+      } else {
+        console.error("Failed to fetch admit card.");
+      }
+    } catch (error) {
+      console.error("Error fetching admit card:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCertificate();
+  }, [student]);
 
   return (
     <div className="space-y-4 w-full h-full p-4">
@@ -31,17 +61,27 @@ const Certificates = () => {
 
       {/* Certificate Preview */}
       <div className="flex justify-center">
-        <div className=" rounded-md p-2">
-          <img
-            src={certificate}
-            alt="Certificate"
-            className="w-full object-contain"
-          />
+        <div className="rounded-md p-2">
+          {loading ? (
+            <div className="text-center text-gray-500">
+              Loading Certificate...
+            </div>
+          ) : certificate ? (
+            <img
+              src={certificate}
+              alt="Certificate"
+              className="w-full object-contain"
+            />
+          ) : (
+            <div className="text-center text-red-500">
+              No Certificate Available
+            </div>
+          )}
         </div>
       </div>
 
-       {/* Download Buttons */}
-       <div className="flex flex-col md:flex-row justify-center items-center mt-4">
+      {/* Download Buttons */}
+      <div className="flex flex-col md:flex-row justify-center items-center mt-4">
         <button className="bg-blue-600 w-fit text-center text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:bg-blue-700 transition-all">
           <Download size={16} />
           Download PDF

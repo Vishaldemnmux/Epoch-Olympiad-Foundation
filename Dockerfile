@@ -17,7 +17,7 @@ COPY --from=backend-build /app/backend /app/backend
 
 COPY student-portal-backend/.env /app/backend/.env
 
-EXPOSE 3000  
+EXPOSE 5000  
 
 WORKDIR /app/backend
 

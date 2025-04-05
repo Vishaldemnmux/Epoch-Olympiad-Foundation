@@ -1,11 +1,20 @@
 import nodeHtmlToImage from "node-html-to-image";
+import path from "path";
 import fs from "fs";
 
 export default async function generateAdmitCard(info) {
+  const logoPath = path.resolve(
+    "C:/Users/anura/Desktop/student-portal-purav/student-portal-frontend/src/assets/logo.png"
+  );
+
+  const logoBase64 = fs.readFileSync(logoPath, { encoding: "base64" });
+  const logoSrc = `data:image/png;base64,${logoBase64}`; // change to image/jpeg if your file is .jpg
+
   await nodeHtmlToImage({
     output: `../outputs/admitCard_${info.name}.png`,
     html: fs.readFileSync("../designs/admitCard.html", "utf8"),
     content: {
+      logoSrc,
       name: info.name,
       father: info.fatherName,
       mother: info.mother,
@@ -39,7 +48,7 @@ export default async function generateAdmitCard(info) {
 }
 
 const studentInfo = {
-  name: "Aviral Shukla",
+  name: "ABC XYZ",
   fatherName: "Ajay Shukla",
   mother: "Vashnavi Shukla",
   class: "10",
@@ -59,6 +68,5 @@ const studentInfo = {
 
   examCenter: "YOUR OWN SCHOOL",
 };
-
 
 generateAdmitCard(studentInfo);

@@ -1,39 +1,43 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import mainLogo from "../assets/main_logo.png";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/authSlice";
+import { BASE_API_URL } from "../Api";
 
 const LoginPage = () => {
   const [batch, setBatch] = useState("2024-25");
   const [mobile, setMobile] = useState("");
   const [formSubmitting, setFormSubmitting] = useState(false);
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogin = async () => {
     setFormSubmitting(true);
+
     if (!mobile) {
       alert("Please enter your mobile number.");
+      setFormSubmitting(false);
       return;
     }
 
     try {
-      const response = await axios.get("http://localhost:5000/get-student", {
+      const response = await axios.get(`${BASE_API_URL}/get-student`, {
         headers: {
           authorization: `Bearer ${mobile}`,
         },
       });
+      
 
-      // Navigate only if data is returned
       if (response.status === 200 && response.data) {
-        const studentData = response.data;
-        localStorage.setItem("student_mobile", mobile);
-        navigate("/dashboard", {
-          state: {
-            mobile,
-            student: studentData,
-          },
-        });
+        const studentData = response.data.studentData;
+
+        // Save to localStorage (optional redundancy)
+        // localStorage.setItem("student_mobile", response.data.mobile);
+        // localStorage.setItem("student_data", JSON.stringify(studentData));
+
+        // Update Redux state
+        dispatch(login({ user: studentData, token: mobile }));
       } else {
         alert("Invalid credentials or no data found.");
       }

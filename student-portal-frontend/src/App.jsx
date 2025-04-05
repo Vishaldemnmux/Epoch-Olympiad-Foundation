@@ -1,4 +1,11 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
 import AdmitCard from "./pages/AdmitCard";
@@ -11,65 +18,49 @@ import PracticeOMR from "./pages/PracticeOMR";
 import Sidebar from "./pages/Sidebar";
 
 function App() {
-  const isLoggedIn = localStorage.getItem("student_mobile");
+  const user = useSelector((state) => state.auth.user);
+
+  
 
   return (
     <Router>
       <Routes>
         <Route
           path="/"
-          element={
-            isLoggedIn ? <Navigate to="/dashboard" replace /> : <LoginPage />
-          }
+          element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
         />
         <Route element={<Sidebar />}>
           <Route
             path="/dashboard"
-            element={
-              isLoggedIn ? <Dashboard /> : <Navigate to="/" replace />
-            }
+            element={user ? <Dashboard /> : <Navigate to="/" replace />}
           />
           <Route
             path="/admit-card"
-            element={
-              isLoggedIn ? <AdmitCard /> : <Navigate to="/" replace />
-            }
+            element={user ? <AdmitCard /> : <Navigate to="/" replace />}
           />
           <Route
             path="/results"
-            element={
-              isLoggedIn ? <Results /> : <Navigate to="/" replace />
-            }
+            element={user ? <Results /> : <Navigate to="/" replace />}
           />
           <Route
             path="/study-materials"
-            element={
-              isLoggedIn ? <StudyMaterials /> : <Navigate to="/" replace />
-            }
+            element={user ? <StudyMaterials /> : <Navigate to="/" replace />}
           />
           <Route
             path="/certificates"
-            element={
-              isLoggedIn ? <Certificates /> : <Navigate to="/" replace />
-            }
+            element={user ? <Certificates /> : <Navigate to="/" replace />}
           />
           <Route
             path="/answer-key"
-            element={
-              isLoggedIn ? <AnswerKeys /> : <Navigate to="/" replace />
-            }
+            element={user ? <AnswerKeys /> : <Navigate to="/" replace />}
           />
           <Route
             path="/feedback"
-            element={
-              isLoggedIn ? <Feedback /> : <Navigate to="/" replace />
-            }
+            element={user ? <Feedback /> : <Navigate to="/" replace />}
           />
           <Route
             path="/practice-omr"
-            element={
-              isLoggedIn ? <PracticeOMR /> : <Navigate to="/" replace />
-            }
+            element={user ? <PracticeOMR /> : <Navigate to="/" replace />}
           />
         </Route>
       </Routes>
