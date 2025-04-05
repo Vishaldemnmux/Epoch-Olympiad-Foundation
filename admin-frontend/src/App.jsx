@@ -6,6 +6,7 @@ import UploadBulkSchoolData from "./pages/UploadBulkSchoolData";
 import UploadBulkStudentData from "./pages/UploadBulkStudentData";
 import SingleStudentForm from "./pages/SingleStudentForm";
 import SingleSchoolForm from "./pages/SingleSchoolForm";
+import UpdateStudent from "./pages/UpdateStudent";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
             <Route path="/uploadSchoolData" element={<UploadBulkSchoolData />} />
             <Route path="/singleStudent" element={<SingleStudentForm />} />
             <Route path="/singleSchool" element={<SingleSchoolForm />} />
+            <Route path="/updateStudent" element={< UpdateStudent />} />
           </Route>
         </Routes>
       </Router>
