@@ -107,23 +107,30 @@ const studentSchema = new mongoose.Schema({
 
  
 const getStudentsBySchoolAndClass = async (schoolCode, className) => {
-  if (!schoolCode || !className) {
-      throw new Error("Missing schoolCode or className");
-  }
-
-  schoolCode = schoolCode.trim();
-  className = className.trim();
-
-  const students = await Student.find({
-      $expr: {
-          $and: [
-              { $eq: [{ $trim: { input: "School Code" } }, schoolCode] },
-              { $eq: [{ $trim: { input: "Class" } }, className] }
-          ]
+  const result = await Student.aggregate([
+      {
+          $match: {
+              $expr: {
+                  $and: [
+                      {
+                          $eq: [
+                              { $trim: { input: "$School Code", chars: " " } },
+                              schoolCode.trim()
+                          ]
+                      },
+                      {
+                          $eq: [
+                              { $trim: { input: "$Class ", chars: " " } },
+                              className.trim()
+                          ]
+                      }
+                  ]
+              }
+          }
       }
-  });
+  ]);
 
-  return students;
+  return result;
 };
 
 
