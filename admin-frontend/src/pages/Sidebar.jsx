@@ -144,14 +144,14 @@ const Sidebar = () => {
           />
         </nav>
 
-        <div className="absolute bottom-0 left-0 w-full border-t border-blue-800 bg-[#002d69]">
-          {/* <MenuItem
+        {/* <div className="absolute bottom-0 left-0 w-full border-t border-blue-800 bg-[#002d69]">
+          <MenuItem
             icon={<Settings size={20} />}
             text="Settings"
             delay={800}
             href="/settings"
             onClick={closeSidebar}
-          /> */}
+          />
           <MenuItem
             icon={<LogOut size={20} />}
             text="Log Out"
@@ -159,7 +159,7 @@ const Sidebar = () => {
             delay={900}
             onClick={closeSidebar}
           />
-        </div>
+        </div> */}
       </aside>
 
       {/* Main Content */}

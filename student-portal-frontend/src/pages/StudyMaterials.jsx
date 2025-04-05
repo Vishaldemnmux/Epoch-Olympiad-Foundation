@@ -16,7 +16,7 @@ const StudyMaterials = () => {
     try {
       const response = await axios.post(
         // `${BASE_API_URL}/fetch-study-material`,
-       "http://localhost:5000/fetch-study-material",
+       `${BASE_API_URL}/fetch-study-material`,
         { mobNo: student["Mob No"] }
       );
 

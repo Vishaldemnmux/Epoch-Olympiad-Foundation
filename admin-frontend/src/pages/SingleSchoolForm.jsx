@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { BASE_URL } from "../Api";
+import { useNavigate } from "react-router-dom";
 
 const SingleSchoolForm = () => {
   const {
@@ -10,6 +11,8 @@ const SingleSchoolForm = () => {
     formState: { errors },
     reset,
   } = useForm();
+
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     data["Mob No"] = {
@@ -22,10 +25,9 @@ const SingleSchoolForm = () => {
 
     try {
       const response = await axios.post(`${BASE_URL}/add-school`, data);
-      console.log("ISPE REQUEST GAYI HAI", `${BASE_URL}/add-school`)
-      console.log(response.data);
       alert(response.data.message);
-      // reset();
+      reset();
+      navigate("/allSchools");
     } catch (error) {
       console.error("❌ Error adding school:", error);
       alert("Failed to add school. Please check inputs.");

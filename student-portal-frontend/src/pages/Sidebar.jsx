@@ -135,13 +135,13 @@ const Sidebar = () => {
             href="/certificates"
             onClick={closeSidebar}
           />
-          <MenuItem
+          {/* <MenuItem
             icon={<KeyRound size={20} />}
             text="ANSWER KEY"
             delay={500}
             href="/answer-key"
             onClick={closeSidebar}
-          />
+          /> */}
           <MenuItem
             icon={<MessageSquare size={20} />}
             text="FEEDBACK"
@@ -149,13 +149,13 @@ const Sidebar = () => {
             href="/feedback"
             onClick={closeSidebar}
           />
-          <MenuItem
+          {/* <MenuItem
             icon={<PenTool size={20} />}
             text="PRACTICE OMR"
             delay={700}
             href="/practice-omr"
             onClick={closeSidebar}
-          />
+          /> */}
         </nav>
 
         <div className="absolute bottom-0 left-0 w-full border-t border-blue-800 bg-[#002d69]">
