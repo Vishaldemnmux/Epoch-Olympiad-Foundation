@@ -104,4 +104,27 @@ const studentSchema = new mongoose.Schema({
 
  console.log("Collection Name:", Student.collection.name);
 
- module.exports = Student ;
+
+ 
+const getStudentsBySchoolAndClass = async (schoolCode, className) => {
+  if (!schoolCode || !className) {
+      throw new Error("Missing schoolCode or className");
+  }
+
+  schoolCode = schoolCode.trim();
+  className = className.trim();
+
+  const students = await Student.find({
+      $expr: {
+          $and: [
+              { $eq: [{ $trim: { input: "School Code" } }, schoolCode] },
+              { $eq: [{ $trim: { input: "Class" } }, className] }
+          ]
+      }
+  });
+
+  return students;
+};
+
+
+ module.exports = { Student, getStudentsBySchoolAndClass } ;

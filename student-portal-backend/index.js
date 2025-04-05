@@ -23,7 +23,8 @@ const app = express();
 const PORT = process.env.PORT;
 const studentCache = {};
 const School = require("./school");
-const Student = require("./student");
+const { Student, getStudentsBySchoolAndClass } = require("./student");
+const {Schools, Students} = require("./models")
 
 const uploadDir = "uploads";
 if (!fs.existsSync(uploadDir)) {
@@ -140,6 +141,32 @@ app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
     return res.status(400).json({ error: "Invalid student details in cache" });
   }
   fetchImage("certificate", studentName, res);
+});
+
+
+
+app.get('/schools', async (req, res) => {
+  try {
+      const SchoolsData = await Schools.find({});
+      return res.status(200).json({ success: true, data: SchoolsData });
+  } catch (error) {
+      console.error("❌ Error fetching schools:", error);
+      res.status(500).json({ success: false, error: 'Failed to fetch schools' });
+  }
+});
+
+
+app.post('/students', async (req, res) => {
+  try {
+      const { schoolCode, className } = req.body;
+
+      const students = await getStudentsBySchoolAndClass(schoolCode, className);
+
+      res.status(200).json({ success: true, data: students });
+  } catch (error) {
+      console.error("❌ Error in route:", error.message);
+      res.status(400).json({ success: false, error: error.message });
+  }
 });
 
 
