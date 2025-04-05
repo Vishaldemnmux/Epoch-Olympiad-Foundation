@@ -6,6 +6,7 @@ import {
   X,
   User2Icon,
   SchoolIcon,
+  LayoutDashboard,
 } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
 import logo from "../assets/main_logo.png";
@@ -93,6 +94,13 @@ const Sidebar = () => {
 
         <nav className="mt-2 space-y-1">
           <MenuItem
+            icon={<LayoutDashboard size={20} />}
+            text="DASHBOARD"
+            delay={400}
+            href="/"
+            onClick={closeSidebar}
+          />
+          <MenuItem
             icon={<User2Icon size={20} />}
             text="UPLOAD STUDENTS"
             delay={400}
@@ -104,6 +112,20 @@ const Sidebar = () => {
             text="UPLOAD SCHOOLS"
             delay={500}
             href="/uploadSchoolData"
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<User2Icon size={20} />}
+            text="ADD STUDENT"
+            delay={500}
+            href="/singleStudent"
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<SchoolIcon size={20} />}
+            text="ADD SCHOOL"
+            delay={500}
+            href="/singleSchool"
             onClick={closeSidebar}
           />
         </nav>
