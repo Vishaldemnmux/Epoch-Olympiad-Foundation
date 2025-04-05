@@ -322,7 +322,7 @@ app.post("/add-school", async (req, res) => {
     const newSchool = new School(req.body);
     const savedSchool = await newSchool.save();
 
-    console.log(saveSchool._id);
+    console.log(savedSchool._id);
 
     return res.status(201).json({
       message: "School added successfully",
