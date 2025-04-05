@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BASE_URL } from "../Api"; // Ensure this is correctly set up
+import { BASE_URL } from "../Api";
+import UpdateSchoolModal from "./UpdateSchoolModal"; // Import the modal
 
 const AllSchools = () => {
   const [schools, setSchools] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedSchool, setSelectedSchool] = useState(null); // Track the school to update
+  const [isModalOpen, setIsModalOpen] = useState(false); // Control modal visibility
 
-  // Fetch all schools on component mount
   useEffect(() => {
     const fetchSchools = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/schools`);
         if (res.data.success) {
           setSchools(res.data.data);
+          console.log(res.data.data);
         } else {
           setError("No schools found.");
         }
@@ -28,7 +31,6 @@ const AllSchools = () => {
     fetchSchools();
   }, []);
 
-  // Handle school deletion
   const handleDelete = async (schoolCode) => {
     if (!window.confirm(`Are you sure you want to delete school with code ${schoolCode}?`)) {
       return;
@@ -48,15 +50,32 @@ const AllSchools = () => {
     }
   };
 
+  const handleUpdateClick = (school) => {
+    setSelectedSchool(school); // Set the school to be updated
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSchool(null);
+  };
+
+  const handleSchoolUpdated = (updatedSchool) => {
+    setSchools(
+      schools.map((school) =>
+        school["School Code"] === updatedSchool["School Code"] ? updatedSchool : school
+      )
+    );
+    closeModal();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
         <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
           All Schools
         </h1>
 
-        {/* Loading State */}
         {loading && (
           <div className="text-center">
             <svg
@@ -83,14 +102,12 @@ const AllSchools = () => {
           </div>
         )}
 
-        {/* Error State */}
         {error && !loading && (
           <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md">
             <p>{error}</p>
           </div>
         )}
 
-        {/* Schools List */}
         {!loading && !error && schools.length === 0 && (
           <div className="text-center text-gray-600">
             <p>No schools available.</p>
@@ -127,12 +144,18 @@ const AllSchools = () => {
                         {school["School Code"]}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {school["School Name"] || "N/A"} {/* Adjust based on your actual field */}
+                        {school["School Name"] || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {school["City"] || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <button
+                          onClick={() => handleUpdateClick(school)}
+                          className="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                        >
+                          Update
+                        </button>
                         <button
                           onClick={() => handleDelete(school["School Code"])}
                           className="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
@@ -148,6 +171,14 @@ const AllSchools = () => {
           </div>
         )}
       </div>
+
+      {isModalOpen && (
+        <UpdateSchoolModal
+          school={selectedSchool}
+          onClose={closeModal}
+          onSchoolUpdated={handleSchoolUpdated}
+        />
+      )}
     </div>
   );
 };
