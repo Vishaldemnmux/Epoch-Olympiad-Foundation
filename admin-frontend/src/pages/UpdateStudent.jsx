@@ -3,8 +3,14 @@ import axios from "axios";
 import { BASE_URL } from "../Api";
 
 const UpdateStudent = () => {
-  const [searchData, setSearchData] = useState({ class: "", schoolCode: "" });
+  const [searchData, setSearchData] = useState({
+    class: "",
+    schoolCode: "",
+    rollNo: "",
+    section: "",
+  });
   const [students, setStudents] = useState([]);
+  const [searched, setSearched] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [updatedData, setUpdatedData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,12 +21,15 @@ const UpdateStudent = () => {
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
+    if (!searchData.rollNo) return alert("Roll No is required");
     try {
       const res = await axios.post(`${BASE_URL}/students`, {
-        schoolCode: searchData.schoolCode,
-        className: searchData.class,
+        schoolCode: Number(searchData.schoolCode), // Convert to number
+        className: searchData.class, // Backend expects 'className'
+        rollNo: searchData.rollNo,
+        section: searchData.section,
       });
-      if (res.data.success && res.data.data.length > 0) {
+      if (res.data.success) {
         setStudents(res.data.data);
         console.log(res.data.data);
       } else {
@@ -30,6 +39,8 @@ const UpdateStudent = () => {
     } catch (error) {
       console.error("Error fetching students", error);
       alert("Failed to fetch students.");
+    } finally {
+      setSearched(true);
     }
   };
 
@@ -37,23 +48,16 @@ const UpdateStudent = () => {
     setUpdatedData({ ...updatedData, [e.target.name]: e.target.value });
   };
 
-  const handleMobileChange = (field, value) => {
-    setUpdatedData({
-      ...updatedData,
-      "Mob No": { ...updatedData["Mob No"], [field]: value },
-    });
-  };
-
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     const payload = {
-      rollNo: updatedData["Roll No"][""],
-      studentClass: updatedData["Class "],
-      "Student Name ": updatedData["Student Name "],  // Note the space
-      "Father Name": updatedData["Father Name"],
-      "Mother Name": updatedData["Mother Name"],
-      DOB: updatedData["DOB"],
-      "Mob No": { "": updatedData["Mob No"][""] },   // Single mobile number field
+      rollNo: updatedData.rollNo,
+      class: updatedData.class, // Match backend field name
+      studentName: updatedData.studentName,
+      fatherName: updatedData.fatherName,
+      motherName: updatedData.motherName,
+      dob: updatedData.dob,
+      mobNo: updatedData.mobNo,
     };
     try {
       const res = await axios.put(`${BASE_URL}/student`, payload);
@@ -81,6 +85,23 @@ const UpdateStudent = () => {
           </h2>
           <form onSubmit={handleSearchSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Roll Number Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Roll Number *
+                </label>
+                <input
+                  type="text"
+                  name="rollNo"
+                  value={searchData.rollNo}
+                  onChange={handleSearchChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
+                  placeholder="e.g., 14100101"
+                  required
+                />
+              </div>
+
+              {/* Class Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Class
@@ -91,21 +112,39 @@ const UpdateStudent = () => {
                   value={searchData.class}
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                  placeholder="Enter class (e.g., 1)"
+                  placeholder="e.g., 1"
                   required
                 />
               </div>
+
+              {/* Section Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Section
+                </label>
+                <input
+                  type="text"
+                  name="section"
+                  value={searchData.section}
+                  onChange={handleSearchChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
+                  placeholder="e.g., A"
+                  required
+                />
+              </div>
+
+              {/* School Code Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   School Code
                 </label>
                 <input
-                  type="text"
+                  type="number" // Changed to number input
                   name="schoolCode"
                   value={searchData.schoolCode}
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                  placeholder="Enter school code (e.g., 141)"
+                  placeholder="e.g., 141"
                   required
                 />
               </div>
@@ -138,22 +177,23 @@ const UpdateStudent = () => {
               >
                 <div>
                   <p className="text-lg font-semibold text-gray-800">
-                    {stu["Student Name "]} {/* Note the space */}
+                    {stu.studentName}
                   </p>
                   <p className="text-sm text-gray-600">
-                    Roll No: {stu["Roll No"][""]} | Class: {stu["Class "]} | School Code: {stu["School Code"]}
+                    Roll No: {stu.rollNo} | Class: {stu.class} | School Code:{" "}
+                    {stu.schoolCode}
                   </p>
                 </div>
                 <button
                   onClick={() => {
                     const formatted = {
-                      "Student Name ": stu["Student Name "] || "",  // Note the space
-                      "Father Name": stu["Father Name"] || "",
-                      "Mother Name": stu["Mother Name"] || "",
-                      DOB: stu["DOB"] || "",
-                      "Roll No": stu["Roll No"] || { "": "" },
-                      "Mob No": stu["Mob No"] || { "": "" },        // Single field instead of code/number
-                      "Class ": stu["Class "] || "",
+                      rollNo: stu.rollNo || "",
+                      class: stu.class || "",
+                      studentName: stu.studentName || "",
+                      fatherName: stu.fatherName || "",
+                      motherName: stu.motherName || "",
+                      dob: stu.dob || "",
+                      mobNo: stu.mobNo || "",
                     };
                     setSelectedStudent(stu);
                     setUpdatedData(formatted);
@@ -165,6 +205,14 @@ const UpdateStudent = () => {
                 </button>
               </div>
             ))}
+          </div>
+        )}
+
+        {students.length === 0 && searched && (
+          <div className="bg-white shadow-xl rounded-xl p-6 mt-6 space-y-4 transition-all duration-300 opacity-100">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+              No Students Found
+            </h3>
           </div>
         )}
 
@@ -208,32 +256,32 @@ const UpdateStudent = () => {
               <form onSubmit={handleUpdateSubmit} className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
-                    "Student Name ",
-                    "Roll No",
-                    "DOB",
-                    "Father Name",
-                    "Mother Name",
+                    "studentName",
+                    "rollNo",
+                    "dob",
+                    "fatherName",
+                    "motherName",
+                    "class",
                   ].map((field, idx) => (
                     <div key={idx}>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {field.trim()} {/* Display without trailing space */}
+                        {field === "studentName"
+                          ? "Student Name"
+                          : field === "fatherName"
+                          ? "Father Name"
+                          : field === "motherName"
+                          ? "Mother Name"
+                          : field === "dob"
+                          ? "Date of Birth"
+                          : field === "rollNo"
+                          ? "Roll Number"
+                          : "Class"}
                       </label>
                       <input
-                        type={field === "DOB" ? "date" : "text"}
+                        type={field === "dob" ? "date" : "text"}
                         name={field}
-                        value={
-                          field === "Roll No"
-                            ? updatedData["Roll No"][""]
-                            : updatedData[field]
-                        }
-                        onChange={(e) =>
-                          field === "Roll No"
-                            ? setUpdatedData({
-                                ...updatedData,
-                                "Roll No": { "": e.target.value },
-                              })
-                            : handleUpdateChange(e)
-                        }
+                        value={updatedData[field]}
+                        onChange={handleUpdateChange}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
                       />
                     </div>
@@ -244,16 +292,11 @@ const UpdateStudent = () => {
                     </label>
                     <input
                       type="text"
-                      name="Mob No"
-                      value={updatedData["Mob No"][""]}
-                      onChange={(e) =>
-                        setUpdatedData({
-                          ...updatedData,
-                          "Mob No": { "": e.target.value },
-                        })
-                      }
+                      name="mobNo"
+                      value={updatedData.mobNo}
+                      onChange={handleUpdateChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                      placeholder="Enter mobile number (e.g., 7880450475)"
+                      placeholder="e.g., 7880450475"
                     />
                   </div>
                 </div>

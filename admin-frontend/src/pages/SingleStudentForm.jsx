@@ -12,12 +12,23 @@ const SingleStudentForm = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    data["Roll No"] = { roll: data.rollNo };
-    data["Mob No"] = { code: data.mobCode, number: data.mobNumber };
-
-    delete data.rollNo;
-    delete data.mobCode;
-    delete data.mobNumber;
+    // Map true/false to "1"/"0" for exam fields
+    const examFields = [
+      "IAOL1",
+      "IAOL1Book",
+      "ITSTL1",
+      "ITSTL1Book",
+      "IMOL1",
+      "IMOL1Book",
+      "IGKOL1",
+      "IGKOL1Book",
+      "IAOL2",
+      "ITSTL2",
+      "IMOL2",
+    ];
+    examFields.forEach((field) => {
+      data[field] = data[field] === "true" ? "1" : "0";
+    });
 
     try {
       const response = await axios.post(`${BASE_URL}/add-student`, data);
@@ -77,14 +88,14 @@ const SingleStudentForm = () => {
                       School Code
                     </label>
                     <input
-                      type="text"
-                      {...register("School Code", {
+                      type="number"
+                      {...register("schoolCode", {
                         required: "School Code is required",
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
                       placeholder="Enter school code"
                     />
-                    {errors["School Code"] && (
+                    {errors.schoolCode && (
                       <p className="text-red-500 text-xs mt-1">
                         School Code is required
                       </p>
@@ -97,11 +108,11 @@ const SingleStudentForm = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("Class", { required: "Class is required" })}
-                      className="w-full px- IAOL1py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                      {...register("class", { required: "Class is required" })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
                       placeholder="Enter class"
                     />
-                    {errors.Class && (
+                    {errors.class && (
                       <p className="text-red-500 text-xs mt-1">
                         Class is required
                       </p>
@@ -114,15 +125,36 @@ const SingleStudentForm = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("Section", {
+                      {...register("section", {
                         required: "Section is required",
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
                       placeholder="Enter section"
                     />
-                    {errors.Section && (
+                    {errors.section && (
                       <p className="text-red-500 text-xs mt-1">
                         Section is required
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Duplicates
+                    </label>
+                    <select
+                      {...register("Duplicates", {
+                        required: "Duplicates is required",
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                    >
+                      <option value="">Select</option>
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                    {errors.Duplicates && (
+                      <p className="text-red-500 text-xs mt-1">
+                        Duplicates is required
                       </p>
                     )}
                   </div>
@@ -141,13 +173,13 @@ const SingleStudentForm = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("Student Name", {
+                      {...register("studentName", {
                         required: "Student Name is required",
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
                       placeholder="Enter student name"
                     />
-                    {errors["Student Name"] && (
+                    {errors.studentName && (
                       <p className="text-red-500 text-xs mt-1">
                         Student Name is required
                       </p>
@@ -160,10 +192,10 @@ const SingleStudentForm = () => {
                     </label>
                     <input
                       type="date"
-                      {...register("DOB", { required: "DOB is required" })}
+                      {...register("dob", { required: "DOB is required" })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
                     />
-                    {errors.DOB && (
+                    {errors.dob && (
                       <p className="text-red-500 text-xs mt-1">
                         Date of Birth is required
                       </p>
@@ -176,13 +208,13 @@ const SingleStudentForm = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("Father Name", {
+                      {...register("fatherName", {
                         required: "Father Name is required",
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
                       placeholder="Enter father's name"
                     />
-                    {errors["Father Name"] && (
+                    {errors.fatherName && (
                       <p className="text-red-500 text-xs mt-1">
                         Father Name is required
                       </p>
@@ -195,46 +227,72 @@ const SingleStudentForm = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("Mother Name", {
+                      {...register("motherName", {
                         required: "Mother Name is required",
                       })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
                       placeholder="Enter mother's name"
                     />
-                    {errors["Mother Name"] && (
+                    {errors.motherName && (
                       <p className="text-red-500 text-xs mt-1">
                         Mother Name is required
                       </p>
                     )}
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Mobile Number
                     </label>
-                    <div className="flex gap-4">
-                      <input
-                        type="text"
-                        {...register("mobCode", {
-                          required: "Country code is required",
-                        })}
-                        className="w-24 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
-                        placeholder="+91"
-                      />
-                      <input
-                        type="text"
-                        {...register("mobNumber", {
-                          required: "Mobile number is required",
-                        })}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
-                        placeholder="Enter mobile number"
-                      />
-                    </div>
-                    {(errors.mobCode || errors.mobNumber) && (
+                    <input
+                      type="text"
+                      {...register("mobNo", {
+                        required: "Mobile number is required",
+                      })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                      placeholder="Enter mobile number (e.g., 7880450475)"
+                    />
+                    {errors.mobNo && (
                       <p className="text-red-500 text-xs mt-1">
-                        {errors.mobCode?.message || errors.mobNumber?.message}
+                        Mobile number is required
                       </p>
                     )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Parents Working School
+                    </label>
+                    <input
+                      type="text"
+                      {...register("ParentsWorkingschool")}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                      placeholder="Enter parents' working school"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Designation
+                    </label>
+                    <input
+                      type="text"
+                      {...register("designation")}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                      placeholder="Enter designation"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      {...register("city")}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                      placeholder="Enter city"
+                    />
                   </div>
                 </div>
               </div>
@@ -247,23 +305,58 @@ const SingleStudentForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[
                     "IAOL1",
-                    "IAOL1 Book",
+                    "IAOL1Book",
                     "ITSTL1",
-                    "ITSTL1 Book",
+                    "ITSTL1Book",
                     "IMOL1",
-                    "IMOL1 Book",
-                    "IENGOL1",
-                    "IENGOL1 Book",
+                    "IMOL1Book",
                     "IGKOL1",
-                    "IGKOL1 Book",
-                    "Total Basic Level Participated Exams",
-                    "Basic Level Full Amount",
-                    "Basic Level Paid Amount",
-                    "Basic Level Amount Paid Online",
+                    "IGKOL1Book",
+                    "IAOL2",
+                    "ITSTL2",
+                    "IMOL2",
                   ].map((field) => (
                     <div key={field}>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         {field}
+                      </label>
+                      <select
+                        {...register(field, {
+                          required: `${field} is required`,
+                        })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                      >
+                        <option value="">Select</option>
+                        <option value="true">True (1)</option>
+                        <option value="false">False (0)</option>
+                      </select>
+                      {errors[field] && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors[field].message}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {[
+                    "totalBasicLevelParticipatedExams",
+                    "basicLevelFullAmount",
+                    "basicLevelAmountPaid",
+                    "basicLevelAmountPaidOnline",
+                    "isBasicLevelConcessionGiven",
+                    "concessionReason",
+                    "remark",
+                    "bookStatus",
+                    "advanceLevelAmountPaid",
+                    "advanceLevelAmountPaidOnline",
+                    "totalAmountPaid",
+                    "totalAmountPaidOnline",
+          
+                  ].map((field) => (
+                    <div key={field}>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {field
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
                       </label>
                       <input
                         type="text"

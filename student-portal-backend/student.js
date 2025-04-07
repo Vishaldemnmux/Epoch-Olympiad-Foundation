@@ -106,7 +106,12 @@ const Student =
   mongoose.models.Student ||
   mongoose.model("Student", studentSchema, "student-data");
 
-const getStudentsBySchoolAndClass = async (schoolCode, className) => {
+const getStudentsBySchoolAndClass = async (
+  schoolCode,
+  className,
+  rollNo,
+  section
+) => {
   const result = await Student.aggregate([
     {
       $match: {
@@ -120,8 +125,20 @@ const getStudentsBySchoolAndClass = async (schoolCode, className) => {
             },
             {
               $eq: [
-                { $trim: { input: "$Class ", chars: " " } },
+                { $trim: { input: "$Class  ", chars: " " } },
                 className.trim(),
+              ],
+            },
+            {
+              $eq: [
+                { $trim: { input: "$Section", chars: " " } },
+                section.trim(),
+              ],
+            },
+            {
+              $eq: [
+                { $trim: { input: "$Roll No", chars: " " } },
+                { "": rollNo.trim() }, // Assuming rollNo is a string
               ],
             },
           ],

@@ -1,54 +1,49 @@
-const express = require("express");
-const multer = require("multer");
-const cors = require("cors");
-const path = require("path");
-const fs = require("fs");
-require("dotenv").config();
-const { fetchDataByMobile } = require("./service.js");
-const {
+import express from "express";
+import multer from "multer";
+import cors from "cors";
+import fs from "fs/promises"; // Use promises version for async
+import dotenv from "dotenv";
+import { fetchDataByMobile } from "./service.js";
+import {
   generateAdmitCard,
   dbConnection,
   uploadAdmitCard,
   fetchAdmitCardFromDB,
-} = require("./admitCardService.js");
-const {
-  generateAndUploadDocument,
-  fetchImage,
-} = require("./certificateService.js");
-const { fetchStudyMaterial } = require("./studyMaterialService.js");
-const processCSV = require("./uploadCSV");
-const uploadSchoolData = require("./uploadSchoolCSV");
-const bodyParser = require("body-parser");
+} from "./admitCardService.js";
+import { generateAndUploadDocument, fetchImage } from "./certificateService.js";
+import { fetchStudyMaterial } from "./studyMaterialService.js";
+import processCSV from "./uploadCSV.js"; // Adjust extension if needed
+import uploadSchoolData from "./uploadSchoolCSV.js"; // Adjust extension if needed
+import {
+  STUDENT_LATEST,
+  getStudentsBySchoolAndClassFromLatestCollection,
+} from "./newStudentModel.model.js";
+import mongoose from "mongoose";
+
+dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const studentCache = {};
-const School = require("./school");
-const { Student, getStudentsBySchoolAndClass } = require("./student");
-const { Schools, Students } = require("./models");
 
 const uploadDir = "uploads";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+if (!fs.stat(uploadDir).catch(() => fs.mkdir(uploadDir))) {
+  console.log("Uploads directory created");
 }
 
 const upload = multer({ dest: "uploads/" });
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use(cors({ origin: "*" }));
 app.use(express.json());
-app.use(bodyParser.json());
 
-// app.use(express.static(path.join(__dirname, "../frontend/build")));
+// MongoDB Connection
+mongoose.connect("mongodb+srv://Backend-developer:oILMhpb5rCvtSeMD@cluster0.9joex.mongodb.net/Epoch-olympiad-foundation")
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-// app.get("/", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
-// });
 
-//API to fetch student details
 
+// API to fetch student details
 app.get("/get-student", async (req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -82,23 +77,82 @@ app.get("/get-student", async (req, res) => {
   }
 });
 
-//API to fetch admit-card
+// API to fetch students by school and class (used by frontend)
+app.post("/students", async (req, res) => {
+  try {
+    const { schoolCode, className, rollNo, section } = req.body;
+
+    if (!rollNo || !schoolCode || !className || !section) {
+      return res.status(400).json({
+        success: false,
+        error: "schoolCode, className, rollNo, and section are required",
+      });
+    }
+
+    const students = await getStudentsBySchoolAndClassFromLatestCollection(
+      Number(schoolCode), // Convert to number
+      className,
+      rollNo,
+      section
+    );
+
+    if (students.length === 0) {
+      return res.status(204).json({
+        success: true,
+        message: "No students found matching the criteria",
+      });
+    }
+
+    return res.status(200).json({ success: true, data: students });
+  } catch (error) {
+    console.error("❌ Error in route:", error.message);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// API to update single student
+app.put("/student", async (req, res) => {
+  try {
+    const { rollNo, class: studentClass, ...updateFields } = req.body;
+
+    if (!rollNo || !studentClass) {
+      return res
+        .status(400)
+        .json({ message: "Roll No and Class are required" });
+    }
+
+    const updatedStudent = await STUDENT_LATEST.findOneAndUpdate(
+      { rollNo, class: studentClass },
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json({ message: "Student updated successfully", updatedStudent });
+  } catch (error) {
+    console.error("Error updating student:", error);
+    res.status(500).json({
+      message: "Error updating student",
+      error: error.message || error,
+    });
+  }
+});
+
+// API to fetch admit-card
 app.get("/fetch-admit-card/:mobNo", async (req, res) => {
   try {
     const { mobNo } = req.params;
 
-    let studentData;
-    if (studentCache[mobNo]) {
-      studentData = studentCache[mobNo];
-    } else {
-      studentData = await fetchDataByMobile(mobNo);
-      if (!studentData || !studentData["Mob No"]) {
-        return res
-          .status(404)
-          .json({ error: "No student found with this mobile number" });
-      }
-      studentCache[mobNo] = studentData;
+    let studentData = studentCache[mobNo] || (await fetchDataByMobile(mobNo));
+    if (!studentData || !studentData["Mob No"]) {
+      return res
+        .status(404)
+        .json({ error: "No student found with this mobile number" });
     }
+    studentCache[mobNo] = studentData;
 
     const studentName = studentData["Student's Name"];
     if (!studentName) {
@@ -113,21 +167,17 @@ app.get("/fetch-admit-card/:mobNo", async (req, res) => {
   }
 });
 
-// API to Fetch Certificate
+// API to fetch certificate
 app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
   const { mobNo } = req.params;
 
-  if (studentCache[mobNo]) {
-    studentData = studentCache[mobNo];
-  } else {
-    studentData = await fetchDataByMobile(mobNo);
-    if (!studentData || !studentData["Mob No"]) {
-      return res
-        .status(404)
-        .json({ error: "No student found with this mobile number" });
-    }
-    studentCache[mobNo] = studentData;
+  let studentData = studentCache[mobNo] || (await fetchDataByMobile(mobNo));
+  if (!studentData || !studentData["Mob No"]) {
+    return res
+      .status(404)
+      .json({ error: "No student found with this mobile number" });
   }
+  studentCache[mobNo] = studentData;
 
   const studentName = studentData["Student's Name"];
   if (!studentName) {
@@ -136,30 +186,7 @@ app.get("/fetch-ceritficate/:mobNo", async (req, res) => {
   fetchImage("certificate", studentName, res);
 });
 
-app.get("/schools", async (req, res) => {
-  try {
-    const SchoolsData = await Schools.find({});
-    return res.status(200).json({ success: true, data: SchoolsData });
-  } catch (error) {
-    console.error("❌ Error fetching schools:", error);
-    res.status(500).json({ success: false, error: "Failed to fetch schools" });
-  }
-});
-
-app.post("/students", async (req, res) => {
-  try {
-    const { schoolCode, className } = req.body;
-
-    const students = await getStudentsBySchoolAndClass(schoolCode, className);
-
-    res.status(200).json({ success: true, data: students });
-  } catch (error) {
-    console.error("❌ Error in route:", error.message);
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-// API to Generate & Upload AdmitCard
+// API to generate & upload admit card
 app.post("/admit-card", async (req, res) => {
   const { mobNo } = req.body;
 
@@ -167,28 +194,21 @@ app.post("/admit-card", async (req, res) => {
     return res.status(400).json({ error: "Mobile number is required" });
   }
 
-  let studentData;
-
-  if (studentCache[mobNo]) {
-    studentData = studentCache[mobNo];
-  } else {
-    studentData = await fetchDataByMobile(mobNo);
-    if (!studentData || !studentData["Mob No"]) {
-      return res
-        .status(404)
-        .json({ error: "No student found with this mobile number" });
-    }
-    studentCache[mobNo] = studentData;
+  let studentData = studentCache[mobNo] || (await fetchDataByMobile(mobNo));
+  if (!studentData || !studentData["Mob No"]) {
+    return res
+      .status(404)
+      .json({ error: "No student found with this mobile number" });
   }
+  studentCache[mobNo] = studentData;
+
   try {
     const result = await generateAdmitCard(studentData);
-
     if (!result.success) {
       return res.status(500).json({ error: result.error });
     }
 
     await dbConnection();
-
     await uploadAdmitCard(studentData, res);
 
     if (!res.headersSent) {
@@ -204,22 +224,18 @@ app.post("/admit-card", async (req, res) => {
   }
 });
 
-// API to Generate & Upload Certificate
+// API to generate & upload certificate or admit card
 app.post("/generate/:type", async (req, res) => {
   const { type } = req.params;
   const { mobNo } = req.body;
 
-  if (studentCache[mobNo]) {
-    studentData = studentCache[mobNo];
-  } else {
-    studentData = await fetchDataByMobile(mobNo);
-    if (!studentData || !studentData["Mob No"]) {
-      return res
-        .status(404)
-        .json({ error: "No student found with this mobile number" });
-    }
-    studentCache[mobNo] = studentData;
+  let studentData = studentCache[mobNo] || (await fetchDataByMobile(mobNo));
+  if (!studentData || !studentData["Mob No"]) {
+    return res
+      .status(404)
+      .json({ error: "No student found with this mobile number" });
   }
+  studentCache[mobNo] = studentData;
 
   const studentName = studentData["Student's Name"];
   if (!studentName) {
@@ -245,24 +261,19 @@ app.post("/generate/:type", async (req, res) => {
   }
 });
 
-//API to Fetch Study Material
+// API to fetch study material
 app.post("/fetch-study-material", async (req, res) => {
   const { mobNo } = req.body;
 
   try {
-    let studentData;
-    if (studentCache[mobNo]) {
-      studentData = studentCache[mobNo];
-    } else {
-      studentData = await fetchDataByMobile(mobNo);
-
-      if (!studentData || !studentData["Mob No"]) {
-        return res
-          .status(404)
-          .json({ error: "No student found with this mobile number" });
-      }
-      studentCache[mobNo] = studentData;
+    let studentData = studentCache[mobNo] || (await fetchDataByMobile(mobNo));
+    if (!studentData || !studentData["Mob No"]) {
+      return res
+        .status(404)
+        .json({ error: "No student found with this mobile number" });
     }
+    studentCache[mobNo] = studentData;
+
     const studentClass = studentData["Class"];
     if (!studentClass) {
       return res
@@ -276,7 +287,7 @@ app.post("/fetch-study-material", async (req, res) => {
   }
 });
 
-//API to upload studentdata in bulk
+// API to upload student data in bulk
 app.post("/upload", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -291,7 +302,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
-//API to upload schooldata in bulk
+// API to upload school data in bulk
 app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Please upload a CSV file" });
@@ -301,14 +312,14 @@ app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
     const response = await uploadSchoolData(req.file.path);
     res.status(200).json(response);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-//API to add single student
+// API to add single student
 app.post("/add-student", async (req, res) => {
   try {
-    const newStudent = new Student(req.body);
+    const newStudent = new STUDENT_LATEST(req.body);
     const savedStudent = await newStudent.save();
 
     res.status(201).json({
@@ -322,151 +333,14 @@ app.post("/add-student", async (req, res) => {
   }
 });
 
-//API to add single school
-app.post("/add-school", async (req, res) => {
-  try {
-    const newSchool = new School(req.body);
-    const savedSchool = await newSchool.save();
-
-    res.status(201).json({
-      message: "School added successfully",
-      collection: savedSchool.constructor.collection.name,
-      documentId: savedSchool._id,
-    });
-  } catch (error) {
-    console.error("❌ Error adding school:", error);
-    res.status(500).json({ message: "Error adding school", error });
-  }
-});
-
-//ApI to Delete single school
-app.delete("/school", async (req, res) => {
-  try {
-    const { schoolCode } = req.body;
-    const deletedSchool = await School.findOneAndDelete({
-      "School Code": schoolCode,
-    });
-
-    if (!deletedSchool) {
-      return res.status(404).json({ message: "School not found" });
-    }
-
-    res.json({ message: "School deleted successfully", deletedSchool });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting school", error });
-  }
-});
-
-//ApI to Delete single student
-app.delete("/student", async (req, res) => {
-  try {
-    const { rollNo, studentClass } = req.body;
-
-    const deletedStudent = await Student.findOneAndDelete({
-      "Roll No": { "": rollNo },
-      Class: studentClass,
-    });
-
-    if (!deletedStudent) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-
-    res.json({ message: "Student deleted successfully", deletedStudent });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting student", error });
-  }
-});
-
-//API to update single student
-app.put("/student", async (req, res) => {
-  try {
-    let { rollNo, studentClass, ...updateFields } = req.body;
-
-    if (!rollNo || !studentClass) {
-      return res
-        .status(400)
-        .json({ message: "Roll No and Class are required" });
-    }
-
-    studentClass = studentClass.toString();
-    rollNo = rollNo.toString();
-
-    const updatedStudent = await Student.findOneAndUpdate(
-      { "Roll No": { "": rollNo }, "Class ": studentClass },
-      { $set: updateFields },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedStudent) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-
-    res.json({ message: "Student updated successfully", updatedStudent });
-  } catch (error) {
-    console.error("Error updating student:", error);
-    res.status(500).json({
-      message: "Error updating student",
-      error: error.message || error,
-    });
-  }
-});
-
-//API to update single school
-app.put("/school", async (req, res) => {
-  try {
-    let { schoolCode, ...updateFields } = req.body;
-
-    if (!schoolCode) {
-      return res.status(400).json({ message: "School Code is required" });
-    }
-
-    schoolCode = schoolCode.toString();
-
-    const updatedSchool = await School.findOneAndUpdate(
-      { "School Code": schoolCode },
-      { $set: updateFields },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedSchool) {
-      return res.status(404).json({ message: "School not found" });
-    }
-
-    res.json({ message: "School updated successfully", updatedSchool });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating school", error });
-  }
-});
-
-app.post("/logout", (req, res) => {
-  const { mobNo } = req.body;
-  const outputDir = path.join(__dirname, "outputs");
-  if (fs.existsSync(outputDir)) {
-    fs.readdirSync(outputDir).forEach((file) => {
-      const filePath = path.join(outputDir, file);
-      fs.unlinkSync(filePath); // Delete file
-    });
-  }
-
-  const uploadsDir = path.join(__dirname, "uploads");
-  if (fs.existsSync(uploadsDir)) {
-    fs.readdirSync(uploadsDir).forEach((file) => {
-      const filePath = path.join(uploadsDir, file);
-      fs.unlinkSync(filePath);
-    });
-  }
-
-  if (mobNo && studentCache[mobNo]) {
-    delete studentCache[mobNo];
-  }
-
-  res.status(200).json({ message: "Logged out successfully" });
-});
-
+// Health check
 app.get("/health", async (req, res) => {
   res.status(200).json({ message: "Server is Healthy" });
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server is UP and RUNNING`);
+  console.log(`Server is UP and RUNNING on port ${PORT}`);
 });
+
+export default app; // Optional, if you need to import app elsewhere
