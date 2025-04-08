@@ -4,19 +4,25 @@ import { BASE_URL } from "../Api";
 
 const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
   const [formData, setFormData] = useState({
-    schoolCode: school["School Code"],
-    schoolName: school["School Name"] || "",
-    emailId: school["Email Id"] || "",
-    fax: school["FAX"] || "",
-    area: school["Area"] || "",
-    city: school["City"] || "",
-    country: school["Country"] || "",
-    incharge: school["Incharge"] || "",
-    dob: school["DOB"] ? school["DOB"].split("T")[0] : "", // Format date for input
-    mobNoCode: school["Mob No"]?.code || "+91",
-    mobNoNumber: school["Mob No"]?.number || "",
-    principalName: school["Principal Name"] || "",
-    remark: school["Remark"] || "",
+    schoolCode: school.schoolCode,
+    schoolName: school.schoolName || "",
+    schoolMobNo: school.schoolMobNo || "",
+    schoolEmail: school.schoolEmail || "",
+    area: school.area || "",
+    city: school.city || "",
+    zone: school.zone || "",
+    state: school.state || "",
+    country: school.country || "",
+    principalName: school.principalName || "",
+    principalMobNo: school.principalMobNo || "",
+    principalDob: school.principalDob ? school.principalDob.split("T")[0] : "",
+    examCenterLevel1: school.examCenterLevel1 || "",
+    examCenterLandmarkLevel1: school.examCenterLandmarkLevel1 || "",
+    examCenterLevel2: school.examCenterLevel2 || "",
+    examCenterLandmarkLevel2: school.examCenterLandmarkLevel2 || "",
+    showAmountPaid: school.showAmountPaid || 0,
+    showPerformance: school.showPerformance || 0,
+    allowFreeDownload: school.allowFreeDownload || "YES",
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -34,20 +40,24 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
     try {
       const updatePayload = {
         schoolCode: formData.schoolCode,
-        "School Name": formData.schoolName,
-        "Email Id": formData.emailId,
-        FAX: formData.fax,
-        Area: formData.area,
-        City: formData.city,
-        Country: formData.country,
-        Incharge: formData.incharge,
-        DOB: formData.dob,
-        "Mob No": {
-          code: formData.mobNoCode,
-          number: formData.mobNoNumber,
-        },
-        "Principal Name": formData.principalName,
-        Remark: formData.remark,
+        schoolName: formData.schoolName,
+        schoolMobNo: formData.schoolMobNo,
+        schoolEmail: formData.schoolEmail,
+        area: formData.area,
+        city: formData.city,
+        zone: formData.zone,
+        state: formData.state,
+        country: formData.country,
+        principalName: formData.principalName,
+        principalMobNo: formData.principalMobNo,
+        principalDob: formData.principalDob,
+        examCenterLevel1: formData.examCenterLevel1,
+        examCenterLandmarkLevel1: formData.examCenterLandmarkLevel1,
+        examCenterLevel2: formData.examCenterLevel2,
+        examCenterLandmarkLevel2: formData.examCenterLandmarkLevel2,
+        showAmountPaid: parseInt(formData.showAmountPaid),
+        showPerformance: parseInt(formData.showPerformance),
+        allowFreeDownload: formData.allowFreeDownload,
       };
 
       const res = await axios.put(`${BASE_URL}/school`, updatePayload);
@@ -100,22 +110,22 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Email ID</label>
+            <label className="block text-sm font-medium text-gray-700">School Mobile Number</label>
             <input
-              type="email"
-              name="emailId"
-              value={formData.emailId}
+              type="text"
+              name="schoolMobNo"
+              value={formData.schoolMobNo}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">FAX</label>
+            <label className="block text-sm font-medium text-gray-700">School Email</label>
             <input
-              type="text"
-              name="fax"
-              value={formData.fax}
+              type="email"
+              name="schoolEmail"
+              value={formData.schoolEmail}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -144,6 +154,28 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Zone</label>
+            <input
+              type="text"
+              name="zone"
+              value={formData.zone}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">State</label>
+            <input
+              type="text"
+              name="state"
+              value={formData.state}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Country</label>
             <input
               type="text"
@@ -152,50 +184,6 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Incharge</label>
-            <input
-              type="text"
-              name="incharge"
-              value={formData.incharge}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-            <input
-              type="date"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Mobile Number</label>
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                name="mobNoCode"
-                value={formData.mobNoCode}
-                onChange={handleChange}
-                placeholder="Code (e.g., +91)"
-                className="mt-1 w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <input
-                type="text"
-                name="mobNoNumber"
-                value={formData.mobNoNumber}
-                onChange={handleChange}
-                placeholder="Number"
-                className="mt-1 w-2/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
           </div>
 
           <div className="mb-4">
@@ -210,14 +198,108 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Remark</label>
-            <textarea
-              name="remark"
-              value={formData.remark}
+            <label className="block text-sm font-medium text-gray-700">Principal Mobile Number</label>
+            <input
+              type="text"
+              name="principalMobNo"
+              value={formData.principalMobNo}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="3"
             />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Principal Date of Birth</label>
+            <input
+              type="date"
+              name="principalDob"
+              value={formData.principalDob}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Exam Center Level 1</label>
+            <input
+              type="text"
+              name="examCenterLevel1"
+              value={formData.examCenterLevel1}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Exam Center Landmark Level 1</label>
+            <input
+              type="text"
+              name="examCenterLandmarkLevel1"
+              value={formData.examCenterLandmarkLevel1}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Exam Center Level 2</label>
+            <input
+              type="text"
+              name="examCenterLevel2"
+              value={formData.examCenterLevel2}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Exam Center Landmark Level 2</label>
+            <input
+              type="text"
+              name="examCenterLandmarkLevel2"
+              value={formData.examCenterLandmarkLevel2}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Show Amount Paid (0 or 1)</label>
+            <input
+              type="number"
+              name="showAmountPaid"
+              value={formData.showAmountPaid}
+              onChange={handleChange}
+              min="0"
+              max="1"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Show Performance (0 or 1)</label>
+            <input
+              type="number"
+              name="showPerformance"
+              value={formData.showPerformance}
+              onChange={handleChange}
+              min="0"
+              max="1"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Allow Free Download</label>
+            <select
+              name="allowFreeDownload"
+              value={formData.allowFreeDownload}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="YES">YES</option>
+              <option value="NO">NO</option>
+            </select>
           </div>
 
           <div className="flex justify-end space-x-3">

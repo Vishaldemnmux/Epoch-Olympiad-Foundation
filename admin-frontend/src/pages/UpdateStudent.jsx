@@ -4,6 +4,7 @@ import { BASE_URL } from "../Api";
 
 const UpdateStudent = () => {
   const [searchData, setSearchData] = useState({
+    studentName: "",
     class: "",
     schoolCode: "",
     rollNo: "",
@@ -28,6 +29,7 @@ const UpdateStudent = () => {
         className: searchData.class, // Backend expects 'className'
         rollNo: searchData.rollNo,
         section: searchData.section,
+        studentName: searchData.studentName,
       });
       if (res.data.success) {
         setStudents(res.data.data);
@@ -85,6 +87,22 @@ const UpdateStudent = () => {
           </h2>
           <form onSubmit={handleSearchSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Student Name Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Student Name *
+                </label>
+                <input
+                  type="text"
+                  name="studentName"
+                  value={searchData.studentName}
+                  onChange={handleSearchChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
+                  placeholder="e.g., 14100101"
+                  required
+                />
+              </div>
+
               {/* Roll Number Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -113,7 +131,6 @@ const UpdateStudent = () => {
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
                   placeholder="e.g., 1"
-                  required
                 />
               </div>
 
@@ -129,7 +146,7 @@ const UpdateStudent = () => {
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
                   placeholder="e.g., A"
-                  required
+                
                 />
               </div>
 
@@ -145,7 +162,7 @@ const UpdateStudent = () => {
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
                   placeholder="e.g., 141"
-                  required
+                  
                 />
               </div>
             </div>

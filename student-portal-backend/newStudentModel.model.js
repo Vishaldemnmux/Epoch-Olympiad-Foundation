@@ -181,7 +181,7 @@ const StudentSchema = new Schema(
       type: String,
       trim: true,
       default: "",
-    }
+    },
   },
   {
     timestamps: true,
@@ -189,48 +189,76 @@ const StudentSchema = new Schema(
 );
 
 // Register the model
-export const STUDENT_LATEST = mongoose.model("student_data_latest", StudentSchema);
+export const STUDENT_LATEST = mongoose.model(
+  "student_data_latest",
+  StudentSchema
+);
 
 export const getStudentsBySchoolAndClassFromLatestCollection = async (
   schoolCode,
   className,
   rollNo,
-  section
+  section,
+  studentName
 ) => {
-  console.log(schoolCode, className, rollNo, section);
+  // Base match conditions with required fields
+  const matchConditions = {
+    $and: [
+      {
+        $eq: [
+          { $trim: { input: "$studentName", chars: " " } },
+          String(studentName).trim(),
+        ],
+      },
+      {
+        $eq: [
+          { $trim: { input: "$rollNo", chars: " " } },
+          String(rollNo).trim(),
+        ],
+      },
+    ],
+  };
+
+  // Add optional conditions if provided
+  const optionalConditions = [];
+  
+  if (schoolCode) {
+    optionalConditions.push({
+      $eq: ["$schoolCode", Number(schoolCode)],
+    });
+  }
+  
+  if (className) {
+    optionalConditions.push({
+      $eq: [
+        { $trim: { input: "$class", chars: " " } },
+        String(className).trim(),
+      ],
+    });
+  }
+  
+  if (section) {
+    optionalConditions.push({
+      $eq: [
+        { $trim: { input: "$section", chars: " " } },
+        String(section).trim(),
+      ],
+    });
+  }
+
+  // Combine required and optional conditions
+  if (optionalConditions.length > 0) {
+    matchConditions.$and = matchConditions.$and.concat(optionalConditions);
+  }
 
   const result = await STUDENT_LATEST.aggregate([
     {
       $match: {
-        $expr: {
-          $and: [
-            {
-              $eq: ["$schoolCode", Number(schoolCode)], // Convert input to number
-            },
-            {
-              $eq: [
-                { $trim: { input: "$class", chars: " " } },
-                String(className).trim(),
-              ],
-            },
-            {
-              $eq: [
-                { $trim: { input: "$section", chars: " " } },
-                String(section).trim(),
-              ],
-            },
-            {
-              $eq: [
-                { $trim: { input: "$rollNo", chars: " " } },
-                String(rollNo).trim(),
-              ],
-            },
-          ],
-        },
+        $expr: matchConditions,
       },
     },
   ]);
-  console.log(result);
 
+  console.log(result);
   return result;
 };

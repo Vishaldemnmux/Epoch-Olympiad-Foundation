@@ -15,8 +15,8 @@ const AllSchools = () => {
       try {
         const res = await axios.get(`${BASE_URL}/schools`);
         if (res.data.success) {
-          setSchools(res.data.data);
-          console.log(res.data.data);
+          setSchools(res.data.schools);
+          console.log(res.data);
         } else {
           setError("No schools found.");
         }
@@ -141,13 +141,13 @@ const AllSchools = () => {
                       className="hover:bg-gray-50 transition-colors duration-200"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {school["School Code"]}
+                        {school.schoolCode || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {school["School Name"] || "N/A"}
+                        {school.schoolName || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {school["City"] || "N/A"}
+                        {school.city || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <button

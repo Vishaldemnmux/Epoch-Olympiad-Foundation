@@ -19,6 +19,7 @@ import {
   getStudentsBySchoolAndClassFromLatestCollection,
 } from "./newStudentModel.model.js";
 import mongoose from "mongoose";
+import { School } from "./school.js";
 
 dotenv.config();
 
@@ -80,12 +81,12 @@ app.get("/get-student", async (req, res) => {
 // API to fetch students by school and class (used by frontend)
 app.post("/students", async (req, res) => {
   try {
-    const { schoolCode, className, rollNo, section } = req.body;
+    const { schoolCode, className, rollNo, section, studentName } = req.body;
 
-    if (!rollNo || !schoolCode || !className || !section) {
+    if (!rollNo || !studentName) {
       return res.status(400).json({
         success: false,
-        error: "schoolCode, className, rollNo, and section are required",
+        error: "rollNo and student name are required",
       });
     }
 
@@ -93,7 +94,8 @@ app.post("/students", async (req, res) => {
       Number(schoolCode), // Convert to number
       className,
       rollNo,
-      section
+      section,
+      studentName
     );
 
     if (students.length === 0) {
@@ -332,6 +334,17 @@ app.post("/add-student", async (req, res) => {
     res.status(500).json({ message: "Error adding student", error });
   }
 });
+
+app.get("/schools", async (req, res) => {
+  try {
+    const schools = await School.find();
+    
+    return res.status(200).json({schools, success:true});
+  } catch (error) {
+    console.error("❌ Error fetching schools:", error);
+    res.status(500).json({ message: "Error fetching schools", error });
+  }
+})
 
 // Health check
 app.get("/health", async (req, res) => {
