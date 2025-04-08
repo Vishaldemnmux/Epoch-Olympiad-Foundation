@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log("✅ MongoDB Connected");
-})
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 const studyMaterialSchema = new mongoose.Schema({
@@ -15,18 +14,22 @@ const studyMaterialSchema = new mongoose.Schema({
   examId: String,
   cost: Number,
   strikeThroughCost: Number,
-  isAvailableForFree: String
+  isAvailableForFree: String,
 });
 
-const StudyMaterial = mongoose.model("StudyMaterial", studyMaterialSchema, "study-material");
+const StudyMaterial = mongoose.model(
+  "StudyMaterial",
+  studyMaterialSchema,
+  "study-material"
+);
 
 async function fetchStudyMaterial(studentClass) {
-    if (!studentClass) {
+  if (!studentClass) {
     console.error("🚨 Error: Class information not found for the student");
     throw new Error("Class information not found for the student");
   }
   try {
-    const materials = await StudyMaterial.find({ class: studentClass });    
+    const materials = await StudyMaterial.find({ class: studentClass });
     if (materials.length === 0) {
       console.warn("⚠️ No study materials found for class:", studentClass);
       throw new Error("No study materials found for this class");

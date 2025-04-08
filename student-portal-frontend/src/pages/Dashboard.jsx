@@ -49,6 +49,8 @@ const AccordionSection = ({ title, children }) => {
 const Dashboard = () => {
   const student = useSelector((state) => state.auth.user);
 
+  console.log(student);
+
   return (
     <div className="flex-1 w-full min-h-screen lg:p-8 p-2 bg-gray-50">
       {/* HEADER USER INFO */}
@@ -120,9 +122,11 @@ const Dashboard = () => {
           delay={700}
         />
         <InfoField
-          label="CITY, STATE"
+          label="SCHOOL AREA, CITY"
           value={
-            `${student?.City || ""}, ${student?.State || ""}`.trim() || "N/A"
+            `${student?.Area || ""}, ${
+              student?.["School City"] || ""
+            }`.trim() || "N/A"
           }
           delay={800}
         />
@@ -145,19 +149,41 @@ const Dashboard = () => {
             <tbody className="divide-y divide-gray-200">
               <tr className="hover:bg-gray-50">
                 <TableCell>Basic</TableCell>
-                <TableCell>Not participated</TableCell>
-                <TableCell>Not participated</TableCell>
-                <TableCell highlight>Yes</TableCell>
-                <TableCell>Not participated</TableCell>
-                <TableCell>Cash: ₹250, Online: ₹0</TableCell>
+                <TableCell highlight={student["IAOL Basic"] === 1}>
+                  {student["IAOL Basic"] === 1 ? "Yes" : "Not participated"}
+                </TableCell>
+                <TableCell highlight={student["IITSTL Basic"] === 1}>
+                  {student["IITSTL Basic"] === 1 ? "Yes" : "Not participated"}
+                </TableCell>
+                <TableCell highlight={student["IIMOL Basic"] === 1}>
+                  {student["IIMOL Basic"] === 1 ? "Yes" : "Not participated"}
+                </TableCell>
+                <TableCell highlight={student["IGKOL Basic"] === 1}>
+                  {student["IGKOL Basic"] === 1 ? "Yes" : "Not participated"}
+                </TableCell>
+                <TableCell>
+                  Cash: ₹{student["Basic Level Paid Amount"] || "0"}, Online: ₹
+                  {student["Basic Level Amount Paid Online"] || "0"}
+                </TableCell>
               </tr>
               <tr className="hover:bg-gray-50">
                 <TableCell>Advance</TableCell>
-                <TableCell>NA</TableCell>
-                <TableCell>NA</TableCell>
-                <TableCell highlight>✓ Qualified</TableCell>
-                <TableCell>NA</TableCell>
-                <TableCell>Cash: ₹0, Online: ₹0</TableCell>
+                <TableCell highlight={student["IAOL Advance"] === 1}>
+                  {student["IAOL Advance"] === 1 ? "Yes" : "Not participated"}
+                </TableCell>
+                <TableCell highlight={student["IITSTL Advance"] === 1}>
+                  {student["IITSTL Advance"] === 1 ? "Yes" : "Not participated"}
+                </TableCell>
+                <TableCell highlight={student["IIMOL Advance"] === 1}>
+                  {student["IIMOL Advance"] === 1
+                    ? "✓ Qualified"
+                    : "Not participated"}
+                </TableCell>
+                <TableCell>NA</TableCell> {/* IGKOL Advance not in data */}
+                <TableCell>
+                  Cash: ₹{student["Advance Level Paid Amount"] || "0"}, Online:
+                  ₹{student["Advance Level Amount Paid Online"] || "0"}
+                </TableCell>
               </tr>
             </tbody>
           </table>

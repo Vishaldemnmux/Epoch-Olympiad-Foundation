@@ -6,6 +6,7 @@ import {
   X,
   User2Icon,
   SchoolIcon,
+  LayoutDashboard,
 } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
 import logo from "../assets/main_logo.png";
@@ -93,29 +94,64 @@ const Sidebar = () => {
 
         <nav className="mt-2 space-y-1">
           <MenuItem
+            icon={<LayoutDashboard size={20} />}
+            text="DASHBOARD"
+            delay={400}
+            href="/"
+            onClick={closeSidebar}
+          />
+          <MenuItem
             icon={<User2Icon size={20} />}
             text="UPLOAD STUDENTS"
             delay={400}
-            href="/upload-student-data"
+            href="/uploadStudentData"
             onClick={closeSidebar}
           />
           <MenuItem
             icon={<SchoolIcon size={20} />}
             text="UPLOAD SCHOOLS"
             delay={500}
-            href="/upload-school-data"
+            href="/uploadSchoolData"
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<User2Icon size={20} />}
+            text="ADD STUDENT"
+            delay={500}
+            href="/singleStudent"
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<SchoolIcon size={20} />}
+            text="ADD SCHOOL"
+            delay={500}
+            href="/singleSchool"
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<SchoolIcon size={20} />}
+            text="UPDATE STUDENT"
+            delay={500}
+            href="/updateStudent"
+            onClick={closeSidebar}
+          />
+           <MenuItem
+            icon={<SchoolIcon size={20} />}
+            text="ALL SCHOOLS"
+            delay={500}
+            href="/allSchools"
             onClick={closeSidebar}
           />
         </nav>
 
-        <div className="absolute bottom-0 left-0 w-full border-t border-blue-800 bg-[#002d69]">
-          {/* <MenuItem
+        {/* <div className="absolute bottom-0 left-0 w-full border-t border-blue-800 bg-[#002d69]">
+          <MenuItem
             icon={<Settings size={20} />}
             text="Settings"
             delay={800}
             href="/settings"
             onClick={closeSidebar}
-          /> */}
+          />
           <MenuItem
             icon={<LogOut size={20} />}
             text="Log Out"
@@ -123,7 +159,7 @@ const Sidebar = () => {
             delay={900}
             onClick={closeSidebar}
           />
-        </div>
+        </div> */}
       </aside>
 
       {/* Main Content */}
