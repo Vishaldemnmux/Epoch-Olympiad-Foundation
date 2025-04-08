@@ -20,6 +20,7 @@ import {
 } from "./newStudentModel.model.js";
 import mongoose from "mongoose";
 import { School } from "./school.js";
+import { Admin } from "./admin.js"
 
 dotenv.config();
 
@@ -325,11 +326,11 @@ app.post("/add-student", async (req, res) => {
     const newStudent = new STUDENT_LATEST(req.body);
     const savedStudent = await newStudent.save();
 
-    res.status(201).json({
-      message: "Student added successfully",
-      collection: savedStudent.constructor.collection.name,
-      documentId: savedStudent._id,
-    });
+    return res.status(201).json({
+        message: "Student added successfully",
+        collection: savedStudent.constructor.collection.name,
+        documentId: savedStudent._id,
+      });
   } catch (error) {
     console.error("❌ Error adding student:", error);
     res.status(500).json({ message: "Error adding student", error });
@@ -376,9 +377,50 @@ app.post("/logout", (req, res) => {
     delete studentCache[mobNo];
   }
 
-  res.status(200).json({ message: "Logged out successfully" });
+  return res.status(200).json({ message: "Logged out successfully" });
 });
 
+
+app.post("/admin/signup", async (req, res) => {
+  try {
+      const { email, password } = req.body;
+
+      const existingAdmin = await Admin.findOne({ email });
+      if (existingAdmin) {
+          return res.status(400).json({ message: "Admin already exists" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newAdmin = new Admin({ email, password: hashedPassword });
+      await newAdmin.save();
+
+      return res.status(201).json({ message: "Admin created successfully" });
+  } catch (err) {
+      return res.status(500).json({ error: "Server error", details: err.message });
+  }
+});
+
+
+app.post("/admin/login", async (req, res) => {
+  try {
+      const { email, password } = req.body;
+
+      const admin = await Admin.findOne({ email });
+      if (!admin) {
+          return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      const isMatch = await bcrypt.compare(password, admin.password);
+      if (!isMatch) {
+          return res.status(401).json({ message: "Invalid password" });
+      }
+
+      return res.status(200).json({ message: "Login successful" });
+  } catch (err) {
+      return res.status(500).json({ error: "Server error", details: err.message });
+  }
+});
 
 // Start server
 app.listen(PORT, () => {
