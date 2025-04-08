@@ -6,26 +6,19 @@ import { BASE_API_URL } from "../Api";
 import axios from "axios";
 
 const StudyMaterials = () => {
-  const [selectedOlympiad, setSelectedOlympiad] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
-  const [studyMaterials, setStudyMaterials] = useState([]); // store fetched data here
-
+  const [studyMaterials, setStudyMaterials] = useState([]);
   const student = useSelector((state) => state.auth.user);
 
   const fetchStudyMaterials = async () => {
     try {
-      const response = await axios.post(
-        // `${BASE_API_URL}/fetch-study-material`,
-       `${BASE_API_URL}/fetch-study-material`,
-        { mobNo: student["Mob No"] }
-      );
+      const response = await axios.post(`${BASE_API_URL}/fetch-study-material`, {
+        mobNo: student["Mob No"],
+      });
 
       if (response.status === 200 && response.data) {
-        // `response.data.data.data` is your array of study materials
         const fetchedMaterials = response.data.data.data;
         console.log("Study materials:", fetchedMaterials);
-        
-        // Store the materials in component state
         setStudyMaterials(fetchedMaterials);
       } else {
         console.error("Failed to fetch study materials.");
@@ -35,6 +28,13 @@ const StudyMaterials = () => {
     }
   };
 
+  const filteredMaterials = selectedLevel
+    ? studyMaterials.filter((item) => {
+        const levelFromExamId = item.examId?.slice(-1); // "IAOL1" => "1"
+        return levelFromExamId === selectedLevel;
+      })
+    : studyMaterials;
+
   useEffect(() => {
     if (student) {
       fetchStudyMaterials();
@@ -42,31 +42,19 @@ const StudyMaterials = () => {
   }, [student]);
 
   return (
-    <div className="p-4 space-y-4 w-full h-full flex flex-col">
+    <div className="min-h-screen p-6 bg-gray-50 flex flex-col">
       {/* HEADER */}
-      <div className="flex items-center gap-3">
-        <div className="bg-blue-100 rounded-full w-9 h-9 flex items-center justify-center">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="bg-blue-100 rounded-full w-9 h-9 flex items-center justify-center text-blue-600">
           <FileText />
         </div>
-        <h2 className="text-2xl font-semibold text-gray-800">
-          Study Material
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-800">Study Material</h2>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col w-full items-center gap-4">
+      <div className="flex flex-col w-full items-center gap-4 mb-6 max-w-md mx-auto">
         <select
-          className="bg-blue-50 w-full border border-blue-200 rounded-md px-4 py-2 text-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300"
-          value={selectedOlympiad}
-          onChange={(e) => setSelectedOlympiad(e.target.value)}
-        >
-          <option value="">Which Olympiad</option>
-          <option value="math">Mathematics</option>
-          <option value="science">Science</option>
-        </select>
-
-        <select
-          className="w-full bg-blue-50 border border-blue-200 rounded-md px-4 py-2 text-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300"
+          className="w-full bg-white border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
           value={selectedLevel}
           onChange={(e) => setSelectedLevel(e.target.value)}
         >
@@ -77,33 +65,80 @@ const StudyMaterials = () => {
       </div>
 
       {/* Study Materials Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden animate-slideUp">
-        {/* Table Header */}
-        <div className="grid grid-cols-4 bg-gradient-to-r from-blue-100 to-blue-50 text-sm font-medium">
-          <div className="px-4 py-3">EXAM</div>
-          <div className="px-4 py-3">TYPE</div>
-          <div className="px-4 py-3">COST</div>
-          <div className="px-4 py-3">BUY</div>
-        </div>
-
-        {/* Table Body */}
-        <div className="divide-y divide-gray-100">
-          {studyMaterials.map((item, index) => (
-            <div
-              key={item._id || index} // use _id if it’s unique
-              className="grid grid-cols-4 text-sm transition-colors duration-300 hover:bg-gray-50"
-            >
-              <div className="px-4 py-3">{item.examId}</div>
-              <div className="px-4 py-3">{item.category}</div>
-              <div className="px-4 py-3">{item.cost}</div>
-              <div className="px-4 py-3">
-                <a href={item.pdfLink} className="text-blue-600 font-medium hover:text-blue-800 transition-transform duration-300 transform hover:scale-105">
-                  View
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="bg-white shadow-lg rounded-xl overflow-hidden flex-grow">
+        <table className="min-w-full text-sm text-gray-700">
+          <thead className="bg-gray-100 text-xs uppercase font-semibold">
+            <tr>
+              <th className="px-6 py-3 text-left">Exam</th>
+              <th className="px-6 py-3 text-left">Type</th>
+              <th className="px-6 py-3 text-left">Cost</th>
+              <th className="px-6 py-3 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredMaterials.length > 0 ? (
+              filteredMaterials.map((item, index) => (
+                <tr
+                  key={item._id || index}
+                  className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200"
+                >
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
+                        {item.examId ? item.examId.charAt(0) : "N/A"}
+                      </div>
+                      <span className="ml-3 font-medium">{item.examId || "N/A"}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-gray-600">{item.category || "N/A"}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {item.cost !== undefined ? item.cost : "N/A"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <a
+                      href={item.pdfLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-3 py-1 bg-indigo-600 text-white text-xs font-medium rounded-md hover:bg-indigo-700 transition duration-150"
+                    >
+                      <svg
+                        className="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        ></path>
+                      </svg>
+                      View
+                    </a>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                  No study materials found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

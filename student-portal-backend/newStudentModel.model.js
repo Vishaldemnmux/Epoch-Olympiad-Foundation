@@ -7,7 +7,6 @@ const StudentSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
     },
     Duplicates: {
       type: Boolean,
@@ -259,6 +258,5 @@ export const getStudentsBySchoolAndClassFromLatestCollection = async (
     },
   ]);
 
-  console.log(result);
   return result;
 };

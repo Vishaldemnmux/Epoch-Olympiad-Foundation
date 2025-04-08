@@ -11,7 +11,7 @@ import {
   fetchAdmitCardFromDB,
 } from "./admitCardService.js";
 import { generateAndUploadDocument, fetchImage } from "./certificateService.js";
-import { fetchStudyMaterial } from "./studyMaterialService.js";
+import { fetchStudyMaterial, StudyMaterial } from "./studyMaterialService.js";
 import processCSV from "./uploadCSV.js"; // Adjust extension if needed
 import uploadSchoolData from "./uploadSchoolCSV.js"; // Adjust extension if needed
 import {
@@ -38,11 +38,12 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 // MongoDB Connection
-mongoose.connect("mongodb+srv://Backend-developer:oILMhpb5rCvtSeMD@cluster0.9joex.mongodb.net/Epoch-olympiad-foundation")
+mongoose
+  .connect(
+    "mongodb+srv://Backend-developer:oILMhpb5rCvtSeMD@cluster0.9joex.mongodb.net/Epoch-olympiad-foundation"
+  )
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
-
-
 
 // API to fetch student details
 app.get("/get-student", async (req, res) => {
@@ -115,16 +116,16 @@ app.post("/students", async (req, res) => {
 // API to update single student
 app.put("/student", async (req, res) => {
   try {
-    const { rollNo, class: studentClass, ...updateFields } = req.body;
+    const { id, rollNo, ...updateFields } = req.body;
 
-    if (!rollNo || !studentClass) {
+    if (!rollNo || !id) {
       return res
         .status(400)
         .json({ message: "Roll No and Class are required" });
     }
 
-    const updatedStudent = await STUDENT_LATEST.findOneAndUpdate(
-      { rollNo, class: studentClass },
+    const updatedStudent = await STUDENT_LATEST.findByIdAndUpdate(
+      id,
       { $set: updateFields },
       { new: true, runValidators: true }
     );
@@ -335,16 +336,114 @@ app.post("/add-student", async (req, res) => {
   }
 });
 
-app.get("/schools", async (req, res) => {
+app.get("/all-schools", async (req, res) => {
   try {
-    const schools = await School.find();
-    
-    return res.status(200).json({schools, success:true});
+    const { page, limit } = req.query;
+    const schools = await School.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+    const totalPages = Math.ceil((await School.countDocuments()) / limit);
+
+    return res.status(200).json({ schools, totalPages, success: true });
   } catch (error) {
     console.error("❌ Error fetching schools:", error);
     res.status(500).json({ message: "Error fetching schools", error });
   }
-})
+});
+
+app.put("/school", async (req, res) => {
+  try {
+    const { schoolCode, ...updateFields } = req.body;
+
+    if (!schoolCode) {
+      return res.status(400).json({ message: "School Code is required" });
+    }
+
+    const updatedSchool = await School.findOneAndUpdate(
+      { schoolCode },
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedSchool) {
+      return res.status(404).json({ message: "School not found" });
+    }
+
+    return res.status(200).json({
+      message: "School updated successfully",
+      updatedSchool,
+      success: true,
+    });
+  } catch (error) {
+    console.error("❌ Error updating school:", error);
+    res.status(500).json({ message: "Error updating school", error });
+  }
+});
+
+app.delete("/school/:schoolCode", async (req, res) => {
+  const { schoolCode } = req.params;
+
+  if (!schoolCode) {
+    return res.status(400).json({ message: "School Code is required" });
+  }
+
+  const deletedSchool = await School.findOneAndDelete({ schoolCode });
+
+  if (!deletedSchool) {
+    return res.status(404).json({ message: "School not found" });
+  }
+
+  return res.status(200).json({
+    message: "School deleted successfully",
+    success: true,
+  });
+});
+
+app.post("/add-school", async (req, res) => {
+  try {
+    const newSchool = new School(req.body);
+    const savedSchool = await newSchool.save();
+    return res.status(201).json({
+      message: "School added successfully",
+      collection: savedSchool.constructor.collection.name,
+      documentId: savedSchool._id,
+      success: true,
+    });
+  } catch (error) {
+    console.error("❌ Error adding school:", error);
+    res.status(500).json({ message: "Error adding school", error });
+  }
+});
+
+app.get("/all-students", async (req, res) => {
+  try {
+    const { page, limit } = req.query;
+    const allStudents = await STUDENT_LATEST.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+    const totalPages = Math.ceil(
+      (await STUDENT_LATEST.countDocuments()) / limit
+    );
+    return res.status(200).json({ allStudents, totalPages, success: true });
+  } catch (error) {
+    console.error("❌ Error fetching all students:", error);
+    res.status(500).json({ message: "Error fetching all students", error });
+  }
+});
+
+app.get("/dashboard-analytics", async (req, res) => {
+  try {
+    const allStudents = await STUDENT_LATEST.countDocuments();
+    const allSchools = await School.countDocuments();
+    const allStudyMaterials = await StudyMaterial.countDocuments();
+    return res
+      .status(200)
+      .json({ allStudents, allSchools, allStudyMaterials, success: true });
+  } catch (error) {
+    console.error("❌ Error fetching all students:", error);
+    res.status(500).json({ message: "Error fetching all students", error });
+  }
+});
 
 // Health check
 app.get("/health", async (req, res) => {

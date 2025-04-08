@@ -41,4 +41,4 @@ async function fetchStudyMaterial(studentClass) {
   }
 }
 
-module.exports = { fetchStudyMaterial, mongoose };
+module.exports = { fetchStudyMaterial, mongoose, StudyMaterial };

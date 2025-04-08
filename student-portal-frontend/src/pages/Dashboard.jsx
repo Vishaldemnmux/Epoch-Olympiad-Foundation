@@ -13,35 +13,19 @@ function InfoField({ label, value, delay = 0 }) {
   );
 }
 
-const TableHeader = ({ children }) => (
-  <th className="text-sm font-semibold text-gray-700 p-3 bg-gray-100">
-    {children}
-  </th>
-);
-
-const TableCell = ({ children, highlight }) => (
-  <td
-    className={`p-3 text-center ${
-      highlight ? "text-green-600 font-semibold" : "text-gray-800"
-    }`}
-  >
-    {children}
-  </td>
-);
-
 const AccordionSection = ({ title, children }) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-lg mb-6 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center px-6 py-4 border-b text-left text-lg font-semibold text-blue-700 hover:bg-blue-50 transition"
+        className="w-full flex justify-between items-center px-6 py-4 border-b text-left text-lg font-semibold text-indigo-700 hover:bg-indigo-50 transition duration-200"
       >
         {title}
         <span className="text-xl">{open ? "−" : "+"}</span>
       </button>
-      {open && <div className="px-4 py-6">{children}</div>}
+      {open && <div className="px-6 py-6">{children}</div>}
     </div>
   );
 };
@@ -52,23 +36,22 @@ const Dashboard = () => {
   console.log(student);
 
   return (
-    <div className="flex-1 w-full min-h-screen lg:p-8 p-2 bg-gray-50">
+    <div className="flex-1 w-full min-h-screen lg:p-8 p-4 bg-gray-50">
       {/* HEADER USER INFO */}
       <div className="flex justify-between items-center mb-8 animate-fade-in">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
             <span className="text-white font-semibold text-xl">
               {student?.["Student's Name"]?.charAt(0) || "S"}
             </span>
           </div>
           <div>
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-2xl font-bold text-gray-800">
               Welcome, {student?.["Student's Name"] || "Student"}
             </h2>
             <p className="text-gray-600">Your Dashboard Overview</p>
           </div>
         </div>
-
         <div className="flex items-center gap-4">
           <img
             src={`https://i.pravatar.cc/100?u=${student?.["Mob No"]}`}
@@ -78,56 +61,23 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Info Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <InfoField
-          label="ROLL NO"
-          value={student?.["Roll No"] || "N/A"}
-          delay={0}
-        />
-        <InfoField
-          label="STUDENT NAME"
-          value={student?.["Student's Name"] || "N/A"}
-          delay={100}
-        />
-        <InfoField
-          label="FATHER'S NAME"
-          value={student?.["Father's Name"] || "N/A"}
-          delay={200}
-        />
-        <InfoField
-          label="MOTHER'S NAME"
-          value={student?.["Mother's Name"] || "N/A"}
-          delay={300}
-        />
-        <InfoField
-          label="MOBILE NO"
-          value={student?.["Mob No"] || "N/A"}
-          delay={400}
-        />
-        <InfoField
-          label="SCHOOL NAME"
-          value={student?.School || "N/A"}
-          delay={500}
-        />
-        <InfoField
-          label="SCHOOL CODE"
-          value={student?.["School Code"] || "N/A"}
-          delay={600}
-        />
+        <InfoField label="ROLL NO" value={student?.["Roll No"] || "N/A"} delay={0} />
+        <InfoField label="STUDENT NAME" value={student?.["Student's Name"] || "N/A"} delay={100} />
+        <InfoField label="FATHER'S NAME" value={student?.["Father's Name"] || "N/A"} delay={200} />
+        <InfoField label="MOTHER'S NAME" value={student?.["Mother's Name"] || "N/A"} delay={300} />
+        <InfoField label="MOBILE NO" value={student?.["Mob No"] || "N/A"} delay={400} />
+        <InfoField label="SCHOOL NAME" value={student?.School || "N/A"} delay={500} />
+        <InfoField label="SCHOOL CODE" value={student?.["School Code"] || "N/A"} delay={600} />
         <InfoField
           label="CLASS AND SECTION"
-          value={
-            `${student?.Class || ""} ${student?.Section || ""}`.trim() || "N/A"
-          }
+          value={`${student?.Class || ""} ${student?.Section || ""}`.trim() || "N/A"}
           delay={700}
         />
         <InfoField
           label="SCHOOL AREA, CITY"
-          value={
-            `${student?.Area || ""}, ${
-              student?.["School City"] || ""
-            }`.trim() || "N/A"
-          }
+          value={`${student?.Area || ""}, ${student?.["School City"] || ""}`.trim() || "N/A"}
           delay={800}
         />
       </div>
@@ -135,55 +85,123 @@ const Dashboard = () => {
       {/* Participation Details Accordion */}
       <AccordionSection title="Participation Details">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
+          <table className="min-w-full text-sm text-gray-700">
+            <thead className="bg-gray-100 text-xs uppercase font-semibold">
               <tr>
-                <TableHeader>LEVEL</TableHeader>
-                <TableHeader>IAO</TableHeader>
-                <TableHeader>ITST</TableHeader>
-                <TableHeader>IMO</TableHeader>
-                <TableHeader>IGKO</TableHeader>
-                <TableHeader>EXAM FEE PAID</TableHeader>
+                <th className="px-6 py-3 text-left">Level</th>
+                <th className="px-6 py-3 text-left">IAO</th>
+                <th className="px-6 py-3 text-left">ITST</th>
+                <th className="px-6 py-3 text-left">IMO</th>
+                <th className="px-6 py-3 text-left">IGKO</th>
+                <th className="px-6 py-3 text-left">Exam Fee Paid</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              <tr className="hover:bg-gray-50">
-                <TableCell>Basic</TableCell>
-                <TableCell highlight={student["IAOL Basic"] === 1}>
-                  {student["IAOL Basic"] === 1 ? "Yes" : "Not participated"}
-                </TableCell>
-                <TableCell highlight={student["IITSTL Basic"] === 1}>
-                  {student["IITSTL Basic"] === 1 ? "Yes" : "Not participated"}
-                </TableCell>
-                <TableCell highlight={student["IIMOL Basic"] === 1}>
-                  {student["IIMOL Basic"] === 1 ? "Yes" : "Not participated"}
-                </TableCell>
-                <TableCell highlight={student["IGKOL Basic"] === 1}>
-                  {student["IGKOL Basic"] === 1 ? "Yes" : "Not participated"}
-                </TableCell>
-                <TableCell>
+            <tbody>
+              <tr className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200">
+                <td className="px-6 py-4">
+                  <div className="flex items-center">
+                    <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
+                      B
+                    </div>
+                    <span className="ml-3 font-medium">Basic</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      student["IAOL Basic"] === 1
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {student["IAOL Basic"] === 1 ? "Yes" : "Not participated"}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      student["IITSTL Basic"] === 1
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {student["IITSTL Basic"] === 1 ? "Yes" : "Not participated"}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      student["IIMOL Basic"] === 1
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {student["IIMOL Basic"] === 1 ? "Yes" : "Not participated"}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      student["IGKOL Basic"] === 1
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {student["IGKOL Basic"] === 1 ? "Yes" : "Not participated"}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-gray-600">
                   Cash: ₹{student["Basic Level Paid Amount"] || "0"}, Online: ₹
                   {student["Basic Level Amount Paid Online"] || "0"}
-                </TableCell>
+                </td>
               </tr>
-              <tr className="hover:bg-gray-50">
-                <TableCell>Advance</TableCell>
-                <TableCell highlight={student["IAOL Advance"] === 1}>
-                  {student["IAOL Advance"] === 1 ? "Yes" : "Not participated"}
-                </TableCell>
-                <TableCell highlight={student["IITSTL Advance"] === 1}>
-                  {student["IITSTL Advance"] === 1 ? "Yes" : "Not participated"}
-                </TableCell>
-                <TableCell highlight={student["IIMOL Advance"] === 1}>
-                  {student["IIMOL Advance"] === 1
-                    ? "✓ Qualified"
-                    : "Not participated"}
-                </TableCell>
-                <TableCell>NA</TableCell> {/* IGKOL Advance not in data */}
-                <TableCell>
-                  Cash: ₹{student["Advance Level Paid Amount"] || "0"}, Online:
-                  ₹{student["Advance Level Amount Paid Online"] || "0"}
-                </TableCell>
+              <tr className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200">
+                <td className="px-6 py-4">
+                  <div className="flex items-center">
+                    <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
+                      A
+                    </div>
+                    <span className="ml-3 font-medium">Advance</span>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      student["IAOL Advance"] === 1
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {student["IAOL Advance"] === 1 ? "Yes" : "Not participated"}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      student["IITSTL Advance"] === 1
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {student["IITSTL Advance"] === 1 ? "Yes" : "Not participated"}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      student["IIMOL Advance"] === 1
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {student["IIMOL Advance"] === 1 ? "✓ Qualified" : "Not participated"}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-gray-600">N/A</td>
+                <td className="px-6 py-4 text-gray-600">
+                  Cash: ₹{student["Advance Level Paid Amount"] || "0"}, Online: ₹
+                  {student["Advance Level Amount Paid Online"] || "0"}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -193,21 +211,25 @@ const Dashboard = () => {
       {/* Workbook Details Accordion */}
       <AccordionSection title="Workbook Details">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
+          <table className="min-w-full text-sm text-gray-700">
+            <thead className="bg-gray-100 text-xs uppercase font-semibold">
               <tr>
-                <TableHeader>IAO</TableHeader>
-                <TableHeader>ITST</TableHeader>
-                <TableHeader>IMO</TableHeader>
-                <TableHeader>STATUS</TableHeader>
+                <th className="px-6 py-3 text-left">IAO</th>
+                <th className="px-6 py-3 text-left">ITST</th>
+                <th className="px-6 py-3 text-left">IMO</th>
+                <th className="px-6 py-3 text-left">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              <tr className="hover:bg-gray-50">
-                <TableCell>No</TableCell>
-                <TableCell>No</TableCell>
-                <TableCell highlight>Yes</TableCell>
-                <TableCell>Delivered on 05 October, 2024</TableCell>
+            <tbody>
+              <tr className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200">
+                <td className="px-6 py-4 text-gray-600">No</td>
+                <td className="px-6 py-4 text-gray-600">No</td>
+                <td className="px-6 py-4">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Yes
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-gray-600">Delivered on 05 October, 2024</td>
               </tr>
             </tbody>
           </table>
@@ -217,43 +239,77 @@ const Dashboard = () => {
       {/* Special Study Materials Accordion */}
       <AccordionSection title="Special Study Materials">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
+          <table className="min-w-full text-sm text-gray-700">
+            <thead className="bg-gray-100 text-xs uppercase font-semibold">
               <tr>
-                <TableHeader>ELIGIBLE FOR FREE</TableHeader>
-                <TableHeader>FREE MATERIALS WORTH</TableHeader>
-                <TableHeader>DETAILS</TableHeader>
-                <TableHeader>REMARK</TableHeader>
-                <TableHeader>STATUS</TableHeader>
+                <th className="px-6 py-3 text-left">Eligible for Free</th>
+                <th className="px-6 py-3 text-left">Free Materials Worth</th>
+                <th className="px-6 py-3 text-left">Details</th>
+                <th className="px-6 py-3 text-left">Remark</th>
+                <th className="px-6 py-3 text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              <tr className="hover:bg-gray-50">
-                <TableCell>Yes</TableCell>
-                <TableCell>₹ 200</TableCell>
-                <TableCell>
-                  1 Online Practice Exam, 1 Basic Level Sample Paper, 1 Advance
-                  Level Sample Paper
-                </TableCell>
-                <TableCell>Opt 3 more exams</TableCell>
-                <TableCell className="text-blue-600">
-                  Download from 'Study Material' tab
-                </TableCell>
+            <tbody>
+              <tr className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200">
+                <td className="px-6 py-4">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Yes
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-gray-600">₹ 200</td>
+                <td className="px-6 py-4 text-gray-600">
+                  1 Online Practice Exam, 1 Basic Level Sample Paper, 1 Advance Level Sample Paper
+                </td>
+                <td className="px-6 py-4 text-gray-600">Opt 3 more exams</td>
+                <td className="px-6 py-4 text-right">
+                  <a
+                    href="#"
+                    className="inline-flex items-center px-3 py-1 bg-indigo-600 text-white text-xs font-medium rounded-md hover:bg-indigo-700 transition duration-150"
+                  >
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      ></path>
+                    </svg>
+                    Download
+                  </a>
+                </td>
               </tr>
-              <tr className="hover:bg-gray-50">
-                <TableCell>No</TableCell>
-                <TableCell>₹ 2000</TableCell>
-                <TableCell>
-                  8 Online Practice Exams Free, 4 Previous Year Basic Level
-                  Papers, 3 Previous Year Advance Level Papers, 4 Basic Level
-                  Sample Papers, 3 Advance Level Sample Papers
-                </TableCell>
-                <TableCell>Get study materials worth ₹ 2000</TableCell>
-                <TableCell>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+              <tr className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200">
+                <td className="px-6 py-4 text-gray-600">No</td>
+                <td className="px-6 py-4 text-gray-600">₹ 2000</td>
+                <td className="px-6 py-4 text-gray-600">
+                  8 Online Practice Exams Free, 4 Previous Year Basic Level Papers, 3 Previous Year Advance Level Papers, 4 Basic Level Sample Papers, 3 Advance Level Sample Papers
+                </td>
+                <td className="px-6 py-4 text-gray-600">Get study materials worth ₹ 2000</td>
+                <td className="px-6 py-4 text-right">
+                  <button className="inline-flex items-center px-3 py-1 bg-indigo-600 text-white text-xs font-medium rounded-md hover:bg-indigo-700 transition duration-150">
+                    <svg
+                      className="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01m-.01 4h.01"
+                      ></path>
+                    </svg>
                     Click here
                   </button>
-                </TableCell>
+                </td>
               </tr>
             </tbody>
           </table>

@@ -137,27 +137,6 @@ const SingleStudentForm = () => {
                       </p>
                     )}
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Duplicates
-                    </label>
-                    <select
-                      {...register("Duplicates", {
-                        required: "Duplicates is required",
-                      })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
-                    >
-                      <option value="">Select</option>
-                      <option value="true">True</option>
-                      <option value="false">False</option>
-                    </select>
-                    {errors.Duplicates && (
-                      <p className="text-red-500 text-xs mt-1">
-                        Duplicates is required
-                      </p>
-                    )}
-                  </div>
                 </div>
               </div>
 
@@ -302,77 +281,120 @@ const SingleStudentForm = () => {
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Exam Information
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    "IAOL1",
-                    "IAOL1Book",
-                    "ITSTL1",
-                    "ITSTL1Book",
-                    "IMOL1",
-                    "IMOL1Book",
-                    "IGKOL1",
-                    "IGKOL1Book",
-                    "IAOL2",
-                    "ITSTL2",
-                    "IMOL2",
-                  ].map((field) => (
-                    <div key={field}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {field}
-                      </label>
-                      <select
-                        {...register(field, {
-                          required: `${field} is required`,
-                        })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
-                      >
-                        <option value="">Select</option>
-                        <option value="true">True (1)</option>
-                        <option value="false">False (0)</option>
-                      </select>
-                      {errors[field] && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors[field].message}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                  {[
-                    "totalBasicLevelParticipatedExams",
-                    "basicLevelFullAmount",
-                    "basicLevelAmountPaid",
-                    "basicLevelAmountPaidOnline",
-                    "isBasicLevelConcessionGiven",
-                    "concessionReason",
-                    "remark",
-                    "bookStatus",
-                    "advanceLevelAmountPaid",
-                    "advanceLevelAmountPaidOnline",
-                    "totalAmountPaid",
-                    "totalAmountPaidOnline",
-          
-                  ].map((field) => (
-                    <div key={field}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {field
-                          .replace(/([A-Z])/g, " $1")
-                          .replace(/^./, (str) => str.toUpperCase())}
-                      </label>
-                      <input
-                        type="text"
-                        {...register(field, {
-                          required: `${field} is required`,
-                        })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
-                        placeholder={`Enter ${field.toLowerCase()}`}
-                      />
-                      {errors[field] && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors[field].message}
-                        </p>
-                      )}
-                    </div>
-                  ))}
+
+                {/* Basic Exam Information */}
+                <div className="mb-6">
+                  <h4 className="text-md font-semibold text-indigo-600 mb-3">
+                    Basic Exam Information (Level 1)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                      "IAOL1",
+                      "IAOL1Book",
+                      "ITSTL1",
+                      "ITSTL1Book",
+                      "IMOL1",
+                      "IMOL1Book",
+                      "IGKOL1",
+                      "IGKOL1Book",
+                    ].map((field) => (
+                      <div key={field}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {field}
+                        </label>
+                        <select
+                          {...register(field, {
+                            required: `${field} is required`,
+                          })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                        >
+                          <option value="">Select</option>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                        {errors[field] && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors[field].message}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Advanced Exam Information */}
+                <div className="mb-6">
+                  <h4 className="text-md font-semibold text-indigo-600 mb-3">
+                    Advanced Exam Information (Level 2)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {["IAOL2", "ITSTL2", "IMOL2"].map((field) => (
+                      <div key={field}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {field}
+                        </label>
+                        <select
+                          {...register(field, {
+                            required: `${field} is required`,
+                          })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                        >
+                          <option value="">Select</option>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                        {errors[field] && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors[field].message}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Payment and Other Exam Details */}
+                <div className="mb-6">
+                  <h4 className="text-md font-semibold text-indigo-600 mb-3">
+                    Payment and Other Exam Details
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                      "totalBasicLevelParticipatedExams",
+                      "basicLevelFullAmount",
+                      "basicLevelAmountPaid",
+                      "basicLevelAmountPaidOnline",
+                      "isBasicLevelConcessionGiven",
+                      "concessionReason",
+                      "remark",
+                      "bookStatus",
+                      "advanceLevelAmountPaid",
+                      "advanceLevelAmountPaidOnline",
+                      "totalAmountPaid",
+                      "totalAmountPaidOnline",
+                    ].map((field) => (
+                      <div key={field}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {field
+                            .replace(/([A-Z])/g, " $1")
+                            .replace(/^./, (str) => str.toUpperCase())}
+                        </label>
+                        <input
+                          type="text"
+                          {...register(field, {
+                            required: `${field} is required`,
+                          })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+                          placeholder={`Enter ${field.toLowerCase()}`}
+                        />
+                        {errors[field] && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors[field].message}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

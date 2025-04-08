@@ -25,7 +25,7 @@ async function fetchDataByMobile(mobNo) {
       return { error: "No student found with this mobile number" };
     }
 
-    const schoolData = await fetchSchoolData(data.schoolCode.toString());
+    const schoolData = await fetchSchoolData(data.schoolCode);
 
     const extractedData = {
       "Roll No": data.rollNo || "Unknown",
@@ -79,11 +79,11 @@ async function fetchDataByMobile(mobNo) {
       "Total Amount Paid": data.totalAmountPaid || "",
       "Total Amount Paid Online": data.totalAmountPaidOnline || "",
       // School data fields (unchanged)
-      "School City": schoolData?.City?.trim() || "Unknown",
-      Country: schoolData?.Country?.trim() || "Unknown",
-      School: schoolData?.["School Name"]?.trim() || "Unknown",
+      "School City": schoolData?.city?.trim() || "Unknown",
+      Country: schoolData?.country?.trim() || "Unknown",
+      School: schoolData?.schoolName?.trim() || "Unknown",
       "Exam Centre": schoolData?.examCenterLevel1?.trim() || "Unknown",
-      Area: schoolData?.Area?.trim() || "Unknown",
+      Area: schoolData?.area?.trim() || "Unknown",
     };
 
     return extractedData;
@@ -95,15 +95,16 @@ async function fetchDataByMobile(mobNo) {
   }
 }
 async function fetchSchoolData(code) {
-  const { collection, client } = await getCollection("epoch-sample-data");
+  const { collection, client } = await getCollection("schools-datas");
 
   try {
-    const schoolData = await collection.findOne({ "School Code": code });
+    const schoolData = await collection.findOne({ schoolCode: code });
 
     if (!schoolData) {
       console.error("No school found for School Code:", code);
       return { error: "No school found with this code" };
     }
+    console.log("School Data:", schoolData);
     return schoolData;
   } catch (error) {
     console.error("Error fetching school data:", error);

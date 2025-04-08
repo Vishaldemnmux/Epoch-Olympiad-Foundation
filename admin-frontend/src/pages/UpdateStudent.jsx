@@ -53,6 +53,7 @@ const UpdateStudent = () => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     const payload = {
+      id: selectedStudent._id,
       rollNo: updatedData.rollNo,
       class: updatedData.class, // Match backend field name
       studentName: updatedData.studentName,
@@ -98,7 +99,7 @@ const UpdateStudent = () => {
                   value={searchData.studentName}
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                  placeholder="e.g., 14100101"
+                  placeholder="Ex. John Doe"
                   required
                 />
               </div>
@@ -114,7 +115,7 @@ const UpdateStudent = () => {
                   value={searchData.rollNo}
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                  placeholder="e.g., 14100101"
+                  placeholder="Ex. 14100101"
                   required
                 />
               </div>
@@ -130,7 +131,7 @@ const UpdateStudent = () => {
                   value={searchData.class}
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                  placeholder="e.g., 1"
+                  placeholder="Ex. 1"
                 />
               </div>
 
@@ -145,7 +146,7 @@ const UpdateStudent = () => {
                   value={searchData.section}
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                  placeholder="e.g., A"
+                  placeholder="Ex. A"
                 
                 />
               </div>
@@ -161,7 +162,7 @@ const UpdateStudent = () => {
                   value={searchData.schoolCode}
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                  placeholder="e.g., 141"
+                  placeholder="Ex. 141"
                   
                 />
               </div>
@@ -313,7 +314,7 @@ const UpdateStudent = () => {
                       value={updatedData.mobNo}
                       onChange={handleUpdateChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
-                      placeholder="e.g., 7880450475"
+                      placeholder="Ex. 7880450475"
                     />
                   </div>
                 </div>

@@ -1,36 +1,67 @@
-import React from "react";
-import { Users, School, UserPlus, BookOpen } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Users, School, BookOpen } from "lucide-react";
+import axios from "axios";
+import { BASE_URL } from "../Api";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const [totalStudents, setTotalStudents] = useState(0);
+  const [totalSchools, setTotalSchools] = useState(0);
+  const [totalStudyMaterials, setTotalStudyMaterials] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchDashoardAnalytics = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/dashboard-analytics`);
+        if (response.data.success) {
+          setTotalStudents(response.data.allStudents);
+          setTotalSchools(response.data.allSchools);
+          setTotalStudyMaterials(response.data.allStudyMaterials);
+        } else {
+          console.error("Failed to fetch dashboard analytics.");
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard analytics:", error);
+      }
+    };
+
+    fetchDashoardAnalytics();
+  });
+
   const stats = [
     {
       title: "Total Students",
-      value: "2,345",
+      value: totalStudents,
       icon: <Users size={24} />,
       color: "bg-blue-600",
       gradient: "from-blue-600 to-blue-400",
+      href: "/allStudents",
+      clickable: true,
     },
     {
       title: "Total Schools",
-      value: "42",
+      value: totalSchools,
       icon: <School size={24} />,
       color: "bg-green-600",
       gradient: "from-green-600 to-green-400",
+      href: "/allSchools",
+      clickable: true,
     },
     {
-      title: "New Enrollments",
-      value: "128",
-      icon: <UserPlus size={24} />,
+      title: "All Study Materials",
+      value: totalStudyMaterials,
+      icon: <BookOpen size={24} />,
       color: "bg-purple-600",
       gradient: "from-purple-600 to-purple-400",
     },
-    {
-      title: "Active Classes",
-      value: "86",
-      icon: <BookOpen size={24} />,
-      color: "bg-yellow-600",
-      gradient: "from-yellow-600 to-yellow-400",
-    },
+    // {
+    //   title: "Active Classes",
+    //   value: "86",
+    //   icon: <BookOpen size={24} />,
+    //   color: "bg-yellow-600",
+    //   gradient: "from-yellow-600 to-yellow-400",
+    // },
   ];
 
   // Mock user data (replace with actual user data from your auth system)
@@ -50,7 +81,8 @@ const Home = () => {
                 Dashboard Overview
               </h1>
               <p className="mt-1 text-gray-600">
-                Welcome back, {user.name}! Here's your school management summary.
+                Welcome back, {user.name}! Here's your school management
+                summary.
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -68,11 +100,14 @@ const Home = () => {
         </header>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6`}>
           {stats.map((stat, index) => (
             <div
+              onClick={() => navigate(stat.href)}
               key={index}
-              className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-200"
+              className={`bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-200 ${
+                stat.clickable ? "cursor-pointer" : ""
+              }`}
             >
               <div
                 className={`inline-flex items-center justify-center p-3 rounded-full bg-gradient-to-br ${stat.gradient} text-white mb-4`}
