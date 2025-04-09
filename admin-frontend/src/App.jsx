@@ -9,12 +9,14 @@ import SingleSchoolForm from "./pages/SingleSchoolForm";
 import UpdateStudent from "./pages/UpdateStudent";
 import AllSchools from "./pages/AllSchools";
 import AllStudents from "./pages/AllStudents";
+import LoginPage from "./pages/LoginPage";
 
 const App = () => {
   return (
     <div>
       <Router>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
           <Route element={<Sidebar />}>
             <Route path="/" element={<Home />} />
             <Route path="/uploadStudentData" element={<UploadBulkStudentData />} />
