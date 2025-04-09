@@ -193,70 +193,68 @@ export const STUDENT_LATEST = mongoose.model(
   StudentSchema
 );
 
-export const getStudentsBySchoolAndClassFromLatestCollection = async (
+export const getStudentsByFilters = async (
   schoolCode,
   className,
   rollNo,
   section,
-  studentName
+  studentName,
+  subject
 ) => {
-  // Base match conditions with required fields
-  const matchConditions = {
-    $and: [
-      {
-        $eq: [
-          { $trim: { input: "$studentName", chars: " " } },
-          String(studentName).trim(),
-        ],
-      },
-      {
-        $eq: [
-          { $trim: { input: "$rollNo", chars: " " } },
-          String(rollNo).trim(),
-        ],
-      },
-    ],
-  };
-
-  // Add optional conditions if provided
-  const optionalConditions = [];
-  
-  if (schoolCode) {
-    optionalConditions.push({
-      $eq: ["$schoolCode", Number(schoolCode)],
-    });
-  }
-  
-  if (className) {
-    optionalConditions.push({
-      $eq: [
-        { $trim: { input: "$class", chars: " " } },
-        String(className).trim(),
-      ],
-    });
-  }
-  
-  if (section) {
-    optionalConditions.push({
-      $eq: [
-        { $trim: { input: "$section", chars: " " } },
-        String(section).trim(),
-      ],
-    });
-  }
-
-  // Combine required and optional conditions
-  if (optionalConditions.length > 0) {
-    matchConditions.$and = matchConditions.$and.concat(optionalConditions);
-  }
-
-  const result = await STUDENT_LATEST.aggregate([
+  const exprConditions = [
     {
-      $match: {
-        $expr: matchConditions,
-      },
+      $eq: [{ $trim: { input: "$rollNo", chars: " " } }, rollNo.trim()],
     },
-  ]);
+    {
+      $eq: [
+        { $trim: { input: "$studentName", chars: " " } },
+        studentName.trim(),
+      ],
+    },
+  ];
+
+  if (schoolCode) {
+    exprConditions.push({
+      $eq: [
+        { $trim: { input: { $toString: "$schoolCode" }, chars: " " } },
+        schoolCode.trim(),
+      ],
+    });
+  }
+
+  if (className) {
+    exprConditions.push({
+      $eq: [{ $trim: { input: "$class", chars: " " } }, className.trim()],
+    });
+  }
+
+  if (section) {
+    exprConditions.push({
+      $eq: [{ $trim: { input: "$section", chars: " " } }, section.trim()],
+    });
+  }
+
+  // Build final $match stage
+  const matchStage = {};
+
+  // Subject filtering if subject is provided
+  if (subject) {
+    const field1 = `${subject}L1`;
+    const field2 = `${subject}L2`;
+
+    matchStage.$match = {
+      $and: [
+        { $or: [{ [field1]: 1 }, { [field2]: 1 }] },
+        { $expr: { $and: exprConditions } },
+      ],
+    };
+  } else {
+    matchStage.$match = {
+      $expr: { $and: exprConditions },
+    };
+  }
+
+  const result = await STUDENT_LATEST.aggregate([matchStage]);
 
   return result;
 };

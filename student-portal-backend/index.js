@@ -16,7 +16,7 @@ import processCSV from "./uploadCSV.js"; // Adjust extension if needed
 import uploadSchoolData from "./uploadSchoolCSV.js"; // Adjust extension if needed
 import {
   STUDENT_LATEST,
-  getStudentsBySchoolAndClassFromLatestCollection,
+  getStudentsByFilters
 } from "./newStudentModel.model.js";
 import mongoose from "mongoose";
 import { School } from "./school.js";
@@ -83,7 +83,7 @@ app.get("/get-student", async (req, res) => {
 // API to fetch students by school and class (used by frontend)
 app.post("/students", async (req, res) => {
   try {
-    const { schoolCode, className, rollNo, section, studentName } = req.body;
+    const { schoolCode, className, rollNo, section, studentName, subject } = req.body;
 
     if (!rollNo || !studentName) {
       return res.status(400).json({
@@ -92,12 +92,13 @@ app.post("/students", async (req, res) => {
       });
     }
 
-    const students = await getStudentsBySchoolAndClassFromLatestCollection(
+    const students = await getStudentsByFilters(
       Number(schoolCode), // Convert to number
       className,
       rollNo,
       section,
-      studentName
+      studentName,
+      subject
     );
 
     if (students.length === 0) {

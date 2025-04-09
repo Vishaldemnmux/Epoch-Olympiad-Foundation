@@ -110,39 +110,62 @@ const getStudentsBySchoolAndClass = async (
   schoolCode,
   className,
   rollNo,
-  section
+  section,
+  studentName,
+  subject
 ) => {
+  console.log(schoolCode, className, rollNo, section, studentName, subject);
+
+  const exprConditions = [
+    {
+      $eq: [{ $trim: { input: "$Roll No", chars: " " } }, rollNo.trim()],
+    },
+    {
+      $eq: [
+        { $trim: { input: "$Student Name ", chars: " " } },
+        studentName.trim(),
+      ],
+    },
+  ];
+
+  if (schoolCode) {
+    exprConditions.push({
+      $eq: [
+        { $trim: { input: "$School Code", chars: " " } },
+        schoolCode.trim(),
+      ],
+    });
+  }
+
+  if (className) {
+    exprConditions.push({
+      $eq: [{ $trim: { input: "$Class  ", chars: " " } }, className.trim()],
+    });
+  }
+
+  if (section) {
+    exprConditions.push({
+      $eq: [{ $trim: { input: "$Section", chars: " " } }, section.trim()],
+    });
+  }
+
+  // Dynamically generate subject keys
+  const field1 = `${subject}L1`;
+  const field2 = `${subject}L2`;
+
   const result = await Student.aggregate([
     {
       $match: {
-        $expr: {
-          $and: [
-            {
-              $eq: [
-                { $trim: { input: "$School Code", chars: " " } },
-                schoolCode.trim(),
-              ],
+        $and: [
+          {
+            $or: [{ [field1]: 1 }, { [field2]: 1 }],
+          },
+          {
+            $expr: {
+              $and: exprConditions,
             },
-            {
-              $eq: [
-                { $trim: { input: "$Class  ", chars: " " } },
-                className.trim(),
-              ],
-            },
-            {
-              $eq: [
-                { $trim: { input: "$Section", chars: " " } },
-                section.trim(),
-              ],
-            },
-            {
-              $eq: [
-                { $trim: { input: "$Roll No", chars: " " } },
-                { "": rollNo.trim() }, // Assuming rollNo is a string
-              ],
-            },
-          ],
-        },
+          },
+        ],
       },
     },
   ]);

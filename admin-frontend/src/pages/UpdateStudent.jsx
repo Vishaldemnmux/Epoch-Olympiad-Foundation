@@ -9,6 +9,7 @@ const UpdateStudent = () => {
     schoolCode: "",
     rollNo: "",
     section: "",
+    subject: "",
   });
   const [students, setStudents] = useState([]);
   const [searched, setSearched] = useState(false);
@@ -30,6 +31,7 @@ const UpdateStudent = () => {
         rollNo: searchData.rollNo,
         section: searchData.section,
         studentName: searchData.studentName,
+        subject: searchData.subject,
       });
       if (res.data.success) {
         setStudents(res.data.data);
@@ -123,7 +125,7 @@ const UpdateStudent = () => {
               {/* Class Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Class
+                  Class (optional)
                 </label>
                 <input
                   type="text"
@@ -138,7 +140,7 @@ const UpdateStudent = () => {
               {/* Section Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Section
+                  Section (optional)
                 </label>
                 <input
                   type="text"
@@ -147,14 +149,13 @@ const UpdateStudent = () => {
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
                   placeholder="Ex. A"
-                
                 />
               </div>
 
               {/* School Code Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  School Code
+                  School Code (optional)
                 </label>
                 <input
                   type="number" // Changed to number input
@@ -163,8 +164,27 @@ const UpdateStudent = () => {
                   onChange={handleSearchChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
                   placeholder="Ex. 141"
-                  
                 />
+              </div>
+
+              {/*  SUBJECT Dropdown */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Subject (optional)
+                </label>
+                <select
+                  name="subject"
+                  value={searchData.subject}
+                  onChange={handleSearchChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm transition-all duration-200"
+                >
+                  <option value="">Select Subject</option>
+                  <option value="IAO">IAO</option>
+                  <option value="ITST">ITST</option>
+                  <option value="IMO">IMO</option>
+                  <option value="IGKO">IGKO</option>
+                  <option value="IAO">IAO</option>
+                </select>
               </div>
             </div>
             <div className="flex justify-center">
