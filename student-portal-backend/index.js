@@ -39,9 +39,9 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 // MongoDB Connection
-mongoose.connect("mongodb+srv://Backend-developer:oILMhpb5rCvtSeMD@cluster0.9joex.mongodb.net/Epoch-olympiad-foundation")
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+// mongoose.connect("mongodb+srv://Backend-developer:oILMhpb5rCvtSeMD@cluster0.9joex.mongodb.net/Epoch-olympiad-foundation")
+//   .then(() => console.log("MongoDB connected"))
+//   .catch((err) => console.error("MongoDB connection error:", err));
 
 
 

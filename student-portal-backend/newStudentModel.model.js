@@ -92,6 +92,16 @@ const StudentSchema = new Schema(
       trim: true,
       default: "0",
     },
+    IENGOL1: {
+      type: String,
+      trim: true,
+      default: "0",
+    },
+    IENGOL1Book: {
+      type: String,
+      trim: true,
+      default: "0",
+    },
     totalBasicLevelParticipatedExams: {
       type: String,
       trim: true,
@@ -142,11 +152,6 @@ const StudentSchema = new Schema(
       trim: true,
       default: "",
     },
-    bookStatus: {
-      type: String,
-      trim: true,
-      default: "",
-    },
     IAOL2: {
       type: String,
       trim: true,
@@ -158,6 +163,11 @@ const StudentSchema = new Schema(
       default: "0",
     },
     IMOL2: {
+      type: String,
+      trim: true,
+      default: "0",
+    },
+    IENGOL2: {
       type: String,
       trim: true,
       default: "0",
@@ -187,6 +197,209 @@ const StudentSchema = new Schema(
     timestamps: true,
   }
 );
+
+
+
+
+// const StudentSchema = new Schema(
+//   {
+    // "Roll No": {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    //   unique: true,
+    // },
+    // Duplicates: {
+    //   type: Boolean,
+    //   default: false,
+    // },
+    // "School Code": {
+    //   type: Number,
+    //   required: true,
+    // },
+    // Class: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
+    // Section: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
+    // "Student Name": {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
+    // "Father Name": {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // "Mother Name": {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // DOB: {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // "Mob No.": {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // IAOL1: {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "IAOL1 Book": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // ITSTL1: {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "ITSTL1 Book": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // IMOL1: {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "IMOL1 Book": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // IENGOL1: {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "IENGOL1 Book": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // IGKOL1: {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "IGKOL1 Book": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "Total Basic Level Participated Exams": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "Basic Level Full Amount": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "Basic Level Paid Amount": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+    // "Basic Level Amount Paid Online": {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // "Is Basic Level Concession Given": {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // "Concession Reason": {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // "Parents Working School": {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // "Designation": {
+    //   type: String,
+    //   trim: true,
+    //   default: "",
+    // },
+    // "City": {
+    //   type: String,
+    //   trim: true,
+    //   default: "0",
+    // },
+//     "IAOL2": {
+//       type: String,
+//       trim: true,
+//       default: "",
+//     },
+//     "ITSTL2": {
+//       type: String,
+//       trim: true,
+//       default: "0",
+//     },
+//     "IMOL2": {
+//       type: String,
+//       trim: true,
+//       default: "0",
+//     },
+//     "IENGOL2": {
+//       type: String,
+//       trim: true,
+//       default: "0",
+//     },
+//     "Advance Level Paid Amount": {
+//       type: String,
+//       trim: true,
+//       default: "0",
+//     },
+//     "Advance Level Amount Paid Online": {
+//       type: String,
+//       trim: true,
+//       default: "0",
+//     },
+//     "Total Amount Paid": {
+//       type: String,
+//       trim: true,
+//       default: "0",
+//     },
+//     "Total Amount Paid Online": {
+//       type: String,
+//       trim: true,
+//       default: "0",
+//     }
+//   },
+//   // { collection: "student-data" }
+//   {
+//     timestamps: true,
+//   }
+// );
+
+
+
+
+
+
+
 
 // Register the model
 export const STUDENT_LATEST = mongoose.model(
