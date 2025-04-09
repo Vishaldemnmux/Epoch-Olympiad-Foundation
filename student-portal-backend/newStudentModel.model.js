@@ -206,19 +206,13 @@ export const getStudentsByFilters = async (
       $eq: [{ $trim: { input: "$rollNo", chars: " " } }, rollNo.trim()],
     },
     {
-      $eq: [
-        { $trim: { input: "$studentName", chars: " " } },
-        studentName.trim(),
-      ],
+      $eq: [{ $trim: { input: "$studentName", chars: " " } }, studentName.trim()],
     },
   ];
 
   if (schoolCode) {
     exprConditions.push({
-      $eq: [
-        { $trim: { input: { $toString: "$schoolCode" }, chars: " " } },
-        schoolCode.trim(),
-      ],
+      $eq: ["$schoolCode", Number(schoolCode)], // Direct number comparison
     });
   }
 
@@ -234,23 +228,32 @@ export const getStudentsByFilters = async (
     });
   }
 
-  // Build final $match stage
   const matchStage = {};
 
-  // Subject filtering if subject is provided
   if (subject) {
     const field1 = `${subject}L1`;
     const field2 = `${subject}L2`;
 
     matchStage.$match = {
       $and: [
-        { $or: [{ [field1]: 1 }, { [field2]: 1 }] },
-        { $expr: { $and: exprConditions } },
+        {
+          $or: [
+            { [field1]: 1 },
+            { [field2]: 1 },
+          ],
+        },
+        {
+          $expr: {
+            $and: exprConditions,
+          },
+        },
       ],
     };
   } else {
     matchStage.$match = {
-      $expr: { $and: exprConditions },
+      $expr: {
+        $and: exprConditions,
+      },
     };
   }
 
@@ -258,3 +261,4 @@ export const getStudentsByFilters = async (
 
   return result;
 };
+
