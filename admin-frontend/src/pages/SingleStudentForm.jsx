@@ -22,9 +22,12 @@ const SingleStudentForm = () => {
       "IMOL1Book",
       "IGKOL1",
       "IGKOL1Book",
+      "IENGOL1",
+      "IENGOL1Book",
       "IAOL2",
       "ITSTL2",
       "IMOL2",
+      "IENGOL2"
     ];
     examFields.forEach((field) => {
       data[field] = data[field] === "true" ? "1" : "0";
@@ -297,6 +300,8 @@ const SingleStudentForm = () => {
                       "IMOL1Book",
                       "IGKOL1",
                       "IGKOL1Book",
+                      "IENGOL1",
+                      "IENGOL1Book"
                     ].map((field) => (
                       <div key={field}>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -328,7 +333,7 @@ const SingleStudentForm = () => {
                     Advanced Exam Information (Level 2)
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {["IAOL2", "ITSTL2", "IMOL2"].map((field) => (
+                    {["IAOL2", "ITSTL2", "IMOL2", "IENGOL2",].map((field) => (
                       <div key={field}>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           {field}
