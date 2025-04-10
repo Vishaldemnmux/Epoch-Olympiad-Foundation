@@ -127,7 +127,7 @@ const AllSchools = () => {
   return (
     <div className="min-h-screen p-6 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">All Schools</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">All Schools</h1>
 
         {loading && (
           <div className="text-center">

@@ -12,14 +12,13 @@ import {
 } from "./admitCardService.js";
 import { generateAndUploadDocument, fetchImage } from "./certificateService.js";
 import { fetchStudyMaterial, StudyMaterial } from "./studyMaterialService.js";
-import processCSV from "./uploadCSV.js"; // Adjust extension if needed
-import uploadSchoolData from "./uploadSchoolCSV.js"; // Adjust extension if needed
+import {excelToMongoDB} from "./excelToMongo.js";
 import {
   STUDENT_LATEST,
-  getStudentsByFilters
+  getStudentsByFilters,
 } from "./newStudentModel.model.js";
 import mongoose from "mongoose";
-import { School } from "./school.js";
+import { School, convertXlsxToMongo } from "./school.js";
 import { Admin } from "./admin.js";
 
 dotenv.config();
@@ -83,7 +82,8 @@ app.get("/get-student", async (req, res) => {
 // API to fetch students by school and class (used by frontend)
 app.post("/students", async (req, res) => {
   try {
-    const { schoolCode, className, rollNo, section, studentName, subject } = req.body;
+    const { schoolCode, className, rollNo, section, studentName, subject } =
+      req.body;
 
     if (!rollNo || !studentName) {
       return res.status(400).json({
@@ -299,7 +299,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 
   try {
-    const response = await processCSV(req.file.path);
+    const response = await excelToMongoDB(req.file.path);
     res.status(200).json(response);
   } catch (error) {
     console.error("Error inserting data:", error);
@@ -314,13 +314,12 @@ app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   }
 
   try {
-    const response = await uploadSchoolData(req.file.path);
+    const response = await convertXlsxToMongo(req.file.path);
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
 // API to add single student
 app.post("/add-student", async (req, res) => {
   try {
