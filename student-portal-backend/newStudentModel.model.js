@@ -198,155 +198,152 @@ const StudentSchema = new Schema(
   }
 );
 
-
-
-
 // const StudentSchema = new Schema(
 //   {
-    // "Roll No": {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    //   unique: true,
-    // },
-    // Duplicates: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-    // "School Code": {
-    //   type: Number,
-    //   required: true,
-    // },
-    // Class: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
-    // Section: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
-    // "Student Name": {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
-    // "Father Name": {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // "Mother Name": {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // DOB: {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // "Mob No.": {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // IAOL1: {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "IAOL1 Book": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // ITSTL1: {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "ITSTL1 Book": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // IMOL1: {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "IMOL1 Book": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // IENGOL1: {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "IENGOL1 Book": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // IGKOL1: {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "IGKOL1 Book": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "Total Basic Level Participated Exams": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "Basic Level Full Amount": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "Basic Level Paid Amount": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
-    // "Basic Level Amount Paid Online": {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // "Is Basic Level Concession Given": {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // "Concession Reason": {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // "Parents Working School": {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // "Designation": {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // "City": {
-    //   type: String,
-    //   trim: true,
-    //   default: "0",
-    // },
+// "Roll No": {
+//   type: String,
+//   required: true,
+//   trim: true,
+//   unique: true,
+// },
+// Duplicates: {
+//   type: Boolean,
+//   default: false,
+// },
+// "School Code": {
+//   type: Number,
+//   required: true,
+// },
+// Class: {
+//   type: String,
+//   required: true,
+//   trim: true,
+// },
+// Section: {
+//   type: String,
+//   required: true,
+//   trim: true,
+// },
+// "Student Name": {
+//   type: String,
+//   required: true,
+//   trim: true,
+// },
+// "Father Name": {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// "Mother Name": {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// DOB: {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// "Mob No.": {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// IAOL1: {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "IAOL1 Book": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// ITSTL1: {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "ITSTL1 Book": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// IMOL1: {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "IMOL1 Book": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// IENGOL1: {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "IENGOL1 Book": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// IGKOL1: {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "IGKOL1 Book": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "Total Basic Level Participated Exams": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "Basic Level Full Amount": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "Basic Level Paid Amount": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
+// "Basic Level Amount Paid Online": {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// "Is Basic Level Concession Given": {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// "Concession Reason": {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// "Parents Working School": {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// "Designation": {
+//   type: String,
+//   trim: true,
+//   default: "",
+// },
+// "City": {
+//   type: String,
+//   trim: true,
+//   default: "0",
+// },
 //     "IAOL2": {
 //       type: String,
 //       trim: true,
@@ -394,84 +391,77 @@ const StudentSchema = new Schema(
 //   }
 // );
 
-
-
-
-
-
-
-
 // Register the model
 export const STUDENT_LATEST = mongoose.model(
   "student_data_latest",
   StudentSchema
 );
 
-export const getStudentsBySchoolAndClassFromLatestCollection = async (
+export const getStudentsByFilters = async (
   schoolCode,
   className,
   rollNo,
   section,
-  studentName
+  studentName,
+  subject
 ) => {
-  // Base match conditions with required fields
-  const matchConditions = {
-    $and: [
-      {
-        $eq: [
-          { $trim: { input: "$studentName", chars: " " } },
-          String(studentName).trim(),
-        ],
-      },
-      {
-        $eq: [
-          { $trim: { input: "$rollNo", chars: " " } },
-          String(rollNo).trim(),
-        ],
-      },
-    ],
-  };
-
-  // Add optional conditions if provided
-  const optionalConditions = [];
-  
-  if (schoolCode) {
-    optionalConditions.push({
-      $eq: ["$schoolCode", Number(schoolCode)],
-    });
-  }
-  
-  if (className) {
-    optionalConditions.push({
-      $eq: [
-        { $trim: { input: "$class", chars: " " } },
-        String(className).trim(),
-      ],
-    });
-  }
-  
-  if (section) {
-    optionalConditions.push({
-      $eq: [
-        { $trim: { input: "$section", chars: " " } },
-        String(section).trim(),
-      ],
-    });
-  }
-
-  // Combine required and optional conditions
-  if (optionalConditions.length > 0) {
-    matchConditions.$and = matchConditions.$and.concat(optionalConditions);
-  }
-
-  const result = await STUDENT_LATEST.aggregate([
+  const exprConditions = [
     {
-      $match: {
-        $expr: matchConditions,
-      },
+      $eq: [{ $trim: { input: "$rollNo", chars: " " } }, rollNo.trim()],
     },
-  ]);
+    {
+      $eq: [
+        { $trim: { input: "$studentName", chars: " " } },
+        studentName.trim(),
+      ],
+    },
+  ];
 
-  console.log(result);
+  if (schoolCode) {
+    exprConditions.push({
+      $eq: ["$schoolCode", Number(schoolCode)], // Direct number comparison
+    });
+  }
+
+  if (className) {
+    exprConditions.push({
+      $eq: [{ $trim: { input: "$class", chars: " " } }, className.trim()],
+    });
+  }
+
+  if (section) {
+    exprConditions.push({
+      $eq: [{ $trim: { input: "$section", chars: " " } }, section.trim()],
+    });
+  }
+
+  const matchStage = {};
+
+  if (subject) {
+    const field1 = `${subject}L1`;
+    const field2 = `${subject}L2`;
+
+    matchStage.$match = {
+      $and: [
+        {
+          $or: [{ [field1]: 1 }, { [field2]: 1 }],
+        },
+        {
+          $expr: {
+            $and: exprConditions,
+          },
+        },
+      ],
+    };
+  } else {
+    matchStage.$match = {
+      $expr: {
+        $and: exprConditions,
+      },
+    };
+  }
+
+  const result = await STUDENT_LATEST.aggregate([matchStage]);
+
   return result;
 };

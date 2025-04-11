@@ -11,16 +11,15 @@ import {
   fetchAdmitCardFromDB,
 } from "./admitCardService.js";
 import { generateAndUploadDocument, fetchImage } from "./certificateService.js";
-import { fetchStudyMaterial } from "./studyMaterialService.js";
-import processCSV from "./uploadCSV.js"; // Adjust extension if needed
-import uploadSchoolData from "./uploadSchoolCSV.js"; // Adjust extension if needed
+import { fetchStudyMaterial, StudyMaterial } from "./studyMaterialService.js";
+import {excelToMongoDB} from "./excelToMongo.js";
 import {
   STUDENT_LATEST,
-  getStudentsBySchoolAndClassFromLatestCollection,
+  getStudentsByFilters,
 } from "./newStudentModel.model.js";
 import mongoose from "mongoose";
-import { School } from "./school.js";
-import { Admin } from "./admin.js"
+import { School, convertXlsxToMongo } from "./school.js";
+import { Admin } from "./admin.js";
 
 dotenv.config();
 
@@ -39,11 +38,12 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 // MongoDB Connection
-// mongoose.connect("mongodb+srv://Backend-developer:oILMhpb5rCvtSeMD@cluster0.9joex.mongodb.net/Epoch-olympiad-foundation")
-//   .then(() => console.log("MongoDB connected"))
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
-
+mongoose
+  .connect(
+    "mongodb+srv://Backend-developer:oILMhpb5rCvtSeMD@cluster0.9joex.mongodb.net/Epoch-olympiad-foundation"
+  )
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // API to fetch student details
 app.get("/get-student", async (req, res) => {
@@ -82,7 +82,8 @@ app.get("/get-student", async (req, res) => {
 // API to fetch students by school and class (used by frontend)
 app.post("/students", async (req, res) => {
   try {
-    const { schoolCode, className, rollNo, section, studentName } = req.body;
+    const { schoolCode, className, rollNo, section, studentName, subject } =
+      req.body;
 
     if (!rollNo || !studentName) {
       return res.status(400).json({
@@ -91,12 +92,13 @@ app.post("/students", async (req, res) => {
       });
     }
 
-    const students = await getStudentsBySchoolAndClassFromLatestCollection(
+    const students = await getStudentsByFilters(
       Number(schoolCode), // Convert to number
       className,
       rollNo,
       section,
-      studentName
+      studentName,
+      subject
     );
 
     if (students.length === 0) {
@@ -116,16 +118,16 @@ app.post("/students", async (req, res) => {
 // API to update single student
 app.put("/student", async (req, res) => {
   try {
-    const { rollNo, class: studentClass, ...updateFields } = req.body;
+    const { id, rollNo, ...updateFields } = req.body;
 
-    if (!rollNo || !studentClass) {
+    if (!rollNo || !id) {
       return res
         .status(400)
         .json({ message: "Roll No and Class are required" });
     }
 
-    const updatedStudent = await STUDENT_LATEST.findOneAndUpdate(
-      { rollNo, class: studentClass },
+    const updatedStudent = await STUDENT_LATEST.findByIdAndUpdate(
+      id,
       { $set: updateFields },
       { new: true, runValidators: true }
     );
@@ -298,7 +300,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 
   try {
-    const response = await processCSV(req.file.path);
+    const response = await excelToMongoDB(req.file.path);
     res.status(200).json(response);
   } catch (error) {
     console.error("Error inserting data:", error);
@@ -313,13 +315,12 @@ app.post("/upload-schooldata", upload.single("file"), async (req, res) => {
   }
 
   try {
-    const response = await uploadSchoolData(req.file.path);
+    const response = await convertXlsxToMongo(req.file.path);
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
 // API to add single student
 app.post("/add-student", async (req, res) => {
   try {
@@ -337,16 +338,158 @@ app.post("/add-student", async (req, res) => {
   }
 });
 
-app.get("/schools", async (req, res) => {
+app.get("/all-schools", async (req, res) => {
   try {
-    const schools = await School.find();
-    
-    return res.status(200).json({schools, success:true});
+    const { page, limit } = req.query;
+    const schools = await School.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+    const totalPages = Math.ceil((await School.countDocuments()) / limit);
+
+    return res.status(200).json({ schools, totalPages, success: true });
   } catch (error) {
     console.error("❌ Error fetching schools:", error);
     res.status(500).json({ message: "Error fetching schools", error });
   }
-})
+});
+
+app.put("/school", async (req, res) => {
+  try {
+    const { schoolCode, ...updateFields } = req.body;
+
+    if (!schoolCode) {
+      return res.status(400).json({ message: "School Code is required" });
+    }
+
+    const updatedSchool = await School.findOneAndUpdate(
+      { schoolCode },
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedSchool) {
+      return res.status(404).json({ message: "School not found" });
+    }
+
+    return res.status(200).json({
+      message: "School updated successfully",
+      updatedSchool,
+      success: true,
+    });
+  } catch (error) {
+    console.error("❌ Error updating school:", error);
+    res.status(500).json({ message: "Error updating school", error });
+  }
+});
+
+app.delete("/school/:schoolCode", async (req, res) => {
+  const { schoolCode } = req.params;
+
+  if (!schoolCode) {
+    return res.status(400).json({ message: "School Code is required" });
+  }
+
+  const deletedSchool = await School.findOneAndDelete({ schoolCode });
+
+  if (!deletedSchool) {
+    return res.status(404).json({ message: "School not found" });
+  }
+
+  return res.status(200).json({
+    message: "School deleted successfully",
+    success: true,
+  });
+});
+
+app.post("/add-school", async (req, res) => {
+  try {
+    const newSchool = new School(req.body);
+    const savedSchool = await newSchool.save();
+    return res.status(201).json({
+      message: "School added successfully",
+      collection: savedSchool.constructor.collection.name,
+      documentId: savedSchool._id,
+      success: true,
+    });
+  } catch (error) {
+    console.error("❌ Error adding school:", error);
+    res.status(500).json({ message: "Error adding school", error });
+  }
+});
+
+app.get("/all-students", async (req, res) => {
+  try {
+    const { page, limit } = req.query;
+    const allStudents = await STUDENT_LATEST.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+    const totalPages = Math.ceil(
+      (await STUDENT_LATEST.countDocuments()) / limit
+    );
+    return res.status(200).json({ allStudents, totalPages, success: true });
+  } catch (error) {
+    console.error("❌ Error fetching all students:", error);
+    res.status(500).json({ message: "Error fetching all students", error });
+  }
+});
+
+app.get("/dashboard-analytics", async (req, res) => {
+  try {
+    const allStudents = await STUDENT_LATEST.countDocuments();
+    const allSchools = await School.countDocuments();
+    const allStudyMaterials = await StudyMaterial.countDocuments();
+    return res
+      .status(200)
+      .json({ allStudents, allSchools, allStudyMaterials, success: true });
+  } catch (error) {
+    console.error("❌ Error fetching all students:", error);
+    res.status(500).json({ message: "Error fetching all students", error });
+  }
+});
+
+app.post("/admin/signup", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const existingAdmin = await Admin.findOne({ email });
+    if (existingAdmin) {
+      return res.status(400).json({ message: "Admin already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newAdmin = new Admin({ email, password: hashedPassword });
+    await newAdmin.save();
+
+    return res.status(201).json({ message: "Admin created successfully" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ error: "Server error", details: err.message });
+  }
+});
+
+app.post("/admin/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    return res.status(200).json({ message: "Login successful" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ error: "Server error", details: err.message });
+  }
+});
 
 // Health check
 app.get("/health", async (req, res) => {

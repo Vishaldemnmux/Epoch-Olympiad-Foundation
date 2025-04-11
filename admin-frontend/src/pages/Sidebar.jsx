@@ -1,64 +1,48 @@
 import React, { useState } from "react";
 import {
-  MessageSquare,
-  LogOut,
   Menu,
   X,
-  User2Icon,
-  SchoolIcon,
+  UserPlus,
+  UserRoundSearch,
+  School,
+  FileUp,
+  Building2,
   LayoutDashboard,
+  Users,
+  LogOut,
 } from "lucide-react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import logo from "../assets/main_logo.png";
 
-function MenuItem({
+const MenuItem = ({
   icon,
   text,
+  href = "#",
   active = false,
   delay = 0,
-  href = "#",
-  // onClick,
-}) {
-  // const dispatch = useDispatch();
-
-  // const handleClick = (e) => {
-  //   if (text === "Log Out") {
-  //     e.preventDefault(); // Only prevent default for logout
-  //     dispatch(logout());
-  //   }
-
-  //   if (onClick) onClick(); // Optional: closeSidebar
-  // };
-
-  return (
-    <Link
-      to={href}
-      // onClick={handleClick}
-      className={`group flex items-center gap-3 px-6 py-3 text-sm transition-all duration-300 animate-slide-in ${
-        active ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
-      }`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <span className="transition-transform duration-300 group-hover:scale-110">
-        {icon}
-      </span>
-      <span>{text}</span>
-    </Link>
-  );
-}
+  onClick,
+}) => (
+  <Link
+    to={href}
+    onClick={onClick}
+    className={`group flex items-center gap-3 px-6 py-3 text-sm transition-all duration-300 ${
+      active ? "bg-blue-900 font-semibold" : "hover:bg-blue-800"
+    }`}
+    style={{ animationDelay: `${delay}ms` }}
+  >
+    <span className="transition-transform duration-300 group-hover:scale-110">
+      {icon}
+    </span>
+    <span className="text-md">{text}</span>
+  </Link>
+);
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const closeSidebar = () => {
-    if (window.innerWidth < 768) {
-      setIsOpen(false);
-    }
-  };
+  const toggleSidebar = () => setIsOpen(!isOpen);
+  const closeSidebar = () => window.innerWidth < 768 && setIsOpen(false);
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -70,7 +54,7 @@ const Sidebar = () => {
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Overlay for mobile */}
+      {/* Mobile Overlay */}
       {isOpen && (
         <div
           className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
@@ -84,79 +68,75 @@ const Sidebar = () => {
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
+        {/* Logo */}
         <div className="flex items-center justify-center pt-4">
           <img
             src={logo}
             alt="IQ Nexus Logo"
-            className="lg:w-50 w-32 object-contain rounded-full"
+            className="lg:w-48 w-32 object-contain rounded-full"
           />
         </div>
 
+        {/* Navigation */}
         <nav className="mt-2 space-y-1">
           <MenuItem
             icon={<LayoutDashboard size={20} />}
-            text="DASHBOARD"
-            delay={400}
+            text="Dashboard"
             href="/"
+            active={location.pathname === "/"}
             onClick={closeSidebar}
           />
           <MenuItem
-            icon={<User2Icon size={20} />}
-            text="UPLOAD STUDENTS"
-            delay={400}
-            href="/uploadStudentData"
-            onClick={closeSidebar}
-          />
-          <MenuItem
-            icon={<SchoolIcon size={20} />}
-            text="UPLOAD SCHOOLS"
-            delay={500}
-            href="/uploadSchoolData"
-            onClick={closeSidebar}
-          />
-          <MenuItem
-            icon={<User2Icon size={20} />}
-            text="ADD STUDENT"
-            delay={500}
-            href="/singleStudent"
-            onClick={closeSidebar}
-          />
-          <MenuItem
-            icon={<SchoolIcon size={20} />}
-            text="ADD SCHOOL"
-            delay={500}
-            href="/singleSchool"
-            onClick={closeSidebar}
-          />
-          <MenuItem
-            icon={<SchoolIcon size={20} />}
-            text="UPDATE STUDENT"
-            delay={500}
-            href="/updateStudent"
-            onClick={closeSidebar}
-          />
-           <MenuItem
-            icon={<SchoolIcon size={20} />}
-            text="ALL SCHOOLS"
-            delay={500}
+            icon={<Building2 size={20} />}
+            text="All Schools"
             href="/allSchools"
+            active={location.pathname === "/allSchools"}
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<Users size={20} />}
+            text="All Students"
+            href="/allStudents"
+            active={location.pathname === "/allStudents"}
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<FileUp size={20} />}
+            text="Upload Students"
+            href="/uploadStudentData"
+            active={location.pathname === "/uploadStudentData"}
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<UserPlus size={20} />}
+            text="Add Student"
+            href="/singleStudent"
+            active={location.pathname === "/singleStudent"}
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<School size={20} />}
+            text="Add School"
+            href="/singleSchool"
+            active={location.pathname === "/singleSchool"}
+            onClick={closeSidebar}
+          />
+          <MenuItem
+            icon={<UserRoundSearch size={20} />}
+            text="Update Student"
+            href="/updateStudent"
+            active={location.pathname === "/updateStudent"}
             onClick={closeSidebar}
           />
         </nav>
 
+        {/* Optional Footer */}
         {/* <div className="absolute bottom-0 left-0 w-full border-t border-blue-800 bg-[#002d69]">
-          <MenuItem
-            icon={<Settings size={20} />}
-            text="Settings"
-            delay={800}
-            href="/settings"
-            onClick={closeSidebar}
-          />
           <MenuItem
             icon={<LogOut size={20} />}
             text="Log Out"
             href="/"
-            delay={900}
+            active={false}
             onClick={closeSidebar}
           />
         </div> */}

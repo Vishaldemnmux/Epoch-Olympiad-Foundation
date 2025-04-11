@@ -17,4 +17,4 @@ const adminSchema = new mongoose.Schema(
 
 const Admin = mongoose.models.Admin || mongoose.model("Admin", adminSchema, "admin-db");
 
-module.exports = { Schools, Students, Admin };
+module.exports = { Admin };

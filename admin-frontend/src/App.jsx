@@ -8,12 +8,15 @@ import SingleStudentForm from "./pages/SingleStudentForm";
 import SingleSchoolForm from "./pages/SingleSchoolForm";
 import UpdateStudent from "./pages/UpdateStudent";
 import AllSchools from "./pages/AllSchools";
+import AllStudents from "./pages/AllStudents";
+import LoginPage from "./pages/LoginPage";
 
 const App = () => {
   return (
     <div>
       <Router>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
           <Route element={<Sidebar />}>
             <Route path="/" element={<Home />} />
             <Route path="/uploadStudentData" element={<UploadBulkStudentData />} />
@@ -22,6 +25,7 @@ const App = () => {
             <Route path="/singleSchool" element={<SingleSchoolForm />} />
             <Route path="/updateStudent" element={< UpdateStudent />} />
             <Route path="/allSchools" element={< AllSchools />} />
+            <Route path="/allStudents" element={< AllStudents />} />
           </Route>
         </Routes>
       </Router>

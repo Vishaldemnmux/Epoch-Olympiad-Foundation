@@ -4,7 +4,7 @@ import { BASE_URL } from "../Api";
 
 const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
   const [formData, setFormData] = useState({
-    schoolCode: school.schoolCode,
+    schoolCode: school.schoolCode || "",
     schoolName: school.schoolName || "",
     schoolMobNo: school.schoolMobNo || "",
     schoolEmail: school.schoolEmail || "",
@@ -15,7 +15,7 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
     country: school.country || "",
     principalName: school.principalName || "",
     principalMobNo: school.principalMobNo || "",
-    principalDob: school.principalDob ? school.principalDob.split("T")[0] : "",
+    principalDob: school.principalDob?.split("T")[0] || "",
     examCenterLevel1: school.examCenterLevel1 || "",
     examCenterLandmarkLevel1: school.examCenterLandmarkLevel1 || "",
     examCenterLevel2: school.examCenterLevel2 || "",
@@ -24,6 +24,7 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
     showPerformance: school.showPerformance || 0,
     allowFreeDownload: school.allowFreeDownload || "YES",
   });
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -39,7 +40,7 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
 
     try {
       const updatePayload = {
-        schoolCode: formData.schoolCode,
+        schoolCode: parseInt(formData.schoolCode), // must be a Number
         schoolName: formData.schoolName,
         schoolMobNo: formData.schoolMobNo,
         schoolEmail: formData.schoolEmail,
@@ -62,8 +63,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
 
       const res = await axios.put(`${BASE_URL}/school`, updatePayload);
 
-      if (res.status === 200) {
+      if (res.data.success) {
         onSchoolUpdated(res.data.updatedSchool);
+        onClose();
         alert(res.data.message);
       }
     } catch (err) {
@@ -87,7 +89,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">School Code (Read-Only)</label>
+            <label className="block text-sm font-medium text-gray-700">
+              School Code (Read-Only)
+            </label>
             <input
               type="text"
               name="schoolCode"
@@ -98,7 +102,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">School Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              School Name
+            </label>
             <input
               type="text"
               name="schoolName"
@@ -110,7 +116,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">School Mobile Number</label>
+            <label className="block text-sm font-medium text-gray-700">
+              School Mobile Number
+            </label>
             <input
               type="text"
               name="schoolMobNo"
@@ -121,7 +129,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">School Email</label>
+            <label className="block text-sm font-medium text-gray-700">
+              School Email
+            </label>
             <input
               type="email"
               name="schoolEmail"
@@ -132,7 +142,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Area</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Area
+            </label>
             <input
               type="text"
               name="area"
@@ -143,7 +155,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">City</label>
+            <label className="block text-sm font-medium text-gray-700">
+              City
+            </label>
             <input
               type="text"
               name="city"
@@ -154,7 +168,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Zone</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Zone
+            </label>
             <input
               type="text"
               name="zone"
@@ -165,7 +181,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">State</label>
+            <label className="block text-sm font-medium text-gray-700">
+              State
+            </label>
             <input
               type="text"
               name="state"
@@ -176,7 +194,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Country</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Country
+            </label>
             <input
               type="text"
               name="country"
@@ -187,7 +207,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Principal Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Principal Name
+            </label>
             <input
               type="text"
               name="principalName"
@@ -198,7 +220,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Principal Mobile Number</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Principal Mobile Number
+            </label>
             <input
               type="text"
               name="principalMobNo"
@@ -209,7 +233,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Principal Date of Birth</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Principal Date of Birth
+            </label>
             <input
               type="date"
               name="principalDob"
@@ -220,7 +246,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Exam Center Level 1</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Exam Center Level 1
+            </label>
             <input
               type="text"
               name="examCenterLevel1"
@@ -231,7 +259,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Exam Center Landmark Level 1</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Exam Center Landmark Level 1
+            </label>
             <input
               type="text"
               name="examCenterLandmarkLevel1"
@@ -242,7 +272,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Exam Center Level 2</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Exam Center Level 2
+            </label>
             <input
               type="text"
               name="examCenterLevel2"
@@ -253,7 +285,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Exam Center Landmark Level 2</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Exam Center Landmark Level 2
+            </label>
             <input
               type="text"
               name="examCenterLandmarkLevel2"
@@ -264,7 +298,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Show Amount Paid (0 or 1)</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Show Amount Paid (0 or 1)
+            </label>
             <input
               type="number"
               name="showAmountPaid"
@@ -277,7 +313,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Show Performance (0 or 1)</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Show Performance (0 or 1)
+            </label>
             <input
               type="number"
               name="showPerformance"
@@ -290,7 +328,9 @@ const UpdateSchoolModal = ({ school, onClose, onSchoolUpdated }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Allow Free Download</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Allow Free Download
+            </label>
             <select
               name="allowFreeDownload"
               value={formData.allowFreeDownload}
