@@ -25,7 +25,7 @@ async function fetchDataByMobile(mobNo) {
       return { error: "No student found with this mobile number" };
     }
 
-    const schoolData = await fetchSchoolData(data.schoolCode);
+    const schoolData = await fetchSchoolData(data.schoolCode.toString());
 
     const extractedData = {
       "Roll No": data.rollNo || "Unknown",
@@ -41,12 +41,13 @@ async function fetchDataByMobile(mobNo) {
       "IAOL Basic": data.IAOL1 !== undefined ? data.IAOL1 : "0",
       "IAOL Basic Book": data.IAOL1Book !== undefined ? data.IAOL1Book : "0",
       "IITSTL Basic": data.ITSTL1 !== undefined ? data.ITSTL1 : "0",
-      "IITSTL Basic Book":
-        data.ITSTL1Book !== undefined ? data.ITSTL1Book : "0",
+      "IITSTL Basic Book": data.ITSTL1Book !== undefined ? data.ITSTL1Book : "0",
       "IIMOL Basic": data.IMOL1 !== undefined ? data.IMOL1 : "0",
       "IIMOL Basic Book": data.IMOL1Book !== undefined ? data.IMOL1Book : "0",
       "IGKOL Basic": data.IGKOL1 !== undefined ? data.IGKOL1 : "0",
       "IGKOL Basic Book": data.IGKOL1Book !== undefined ? data.IGKOL1Book : "0",
+      "IENGOL Basic": data.IENGOL1 !== undefined ? data.IENGOL1 : "0",
+      "IENGOL Basic Book": data.IENGOL1Book !== undefined ? data.IENGOL1Book : "0",
       "Total Basic Level Participated Exams":
         data.totalBasicLevelParticipatedExams !== undefined
           ? data.totalBasicLevelParticipatedExams
@@ -69,10 +70,10 @@ async function fetchDataByMobile(mobNo) {
       "Parents Working School": data.ParentsWorkingschool || "",
       Designation: data.designation || "",
       City: data.city || "",
-      "Book Status": data.bookStatus || "",
       "IAOL Advance": data.IAOL2 !== undefined ? data.IAOL2 : "0",
       "IITSTL Advance": data.ITSTL2 !== undefined ? data.ITSTL2 : "0",
       "IIMOL Advance": data.IMOL2 !== undefined ? data.IMOL2 : "0",
+      "IENGOL Advance": data.IENGOL2 !== undefined ? data.IENGOL2 : "0",
       "Advance Level Paid Amount": data.advanceLevelAmountPaid || "",
       "Advance Level Amount Paid Online":
         data.advanceLevelAmountPaidOnline || "",
@@ -82,7 +83,7 @@ async function fetchDataByMobile(mobNo) {
       "School City": schoolData?.city?.trim() || "Unknown",
       Country: schoolData?.country?.trim() || "Unknown",
       School: schoolData?.schoolName?.trim() || "Unknown",
-      "Exam Centre": schoolData?.examCenterLevel1?.trim() || "Unknown",
+      // "Exam Centre": schoolData?.examCenterLevel1?.trim() || "Unknown",
       Area: schoolData?.area?.trim() || "Unknown",
     };
 
@@ -98,13 +99,12 @@ async function fetchSchoolData(code) {
   const { collection, client } = await getCollection("schools-datas");
 
   try {
-    const schoolData = await collection.findOne({ schoolCode: code });
+    const schoolData = await collection.findOne({ "schoolCode": code });
 
     if (!schoolData) {
       console.error("No school found for School Code:", code);
       return { error: "No school found with this code" };
     }
-    console.log("School Data:", schoolData);
     return schoolData;
   } catch (error) {
     console.error("Error fetching school data:", error);

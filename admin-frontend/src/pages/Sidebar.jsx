@@ -121,13 +121,13 @@ const Sidebar = () => {
             active={location.pathname === "/singleSchool"}
             onClick={closeSidebar}
           />
-          <MenuItem
+          {/* <MenuItem
             icon={<UserRoundSearch size={20} />}
             text="Update Student"
             href="/updateStudent"
             active={location.pathname === "/updateStudent"}
             onClick={closeSidebar}
-          />
+          /> */}
         </nav>
 
         {/* Optional Footer */}

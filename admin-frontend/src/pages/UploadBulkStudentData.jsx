@@ -217,10 +217,14 @@ const UploadBulkStudentData = () => {
             </ul>
 
             <div className="pt-4 border-t border-gray-200">
-              <button className="flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm font-medium">
+              <a
+                href="/studentCSV.csv"
+                className="hover:cursor-pointer flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                download
+              >
                 <Download className="w-4 h-4" />
                 Download CSV Template
-              </button>
+              </a>
             </div>
 
             <div className="bg-blue-50 rounded-lg p-4 mt-6">
