@@ -18,8 +18,6 @@ const SingleSchoolForm = () => {
     try {
       // Convert numeric fields
       data.schoolCode = parseInt(data.schoolCode);
-      data.showAmountPaid = parseInt(data.showAmountPaid);
-      data.showPerformance = parseInt(data.showPerformance);
 
       const response = await axios.post(`${BASE_URL}/add-school`, data);
       alert(response.data.message);
@@ -111,6 +109,16 @@ const SingleSchoolForm = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Fax
+                  </label>
+                  <input
+                    type="text"
+                    {...register("fax")}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Area
                   </label>
                   <input
@@ -130,26 +138,6 @@ const SingleSchoolForm = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Zone
-                  </label>
-                  <input
-                    type="text"
-                    {...register("zone")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    State
-                  </label>
-                  <input
-                    type="text"
-                    {...register("state")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Country
                   </label>
@@ -201,96 +189,50 @@ const SingleSchoolForm = () => {
               </div>
             </div>
 
-            {/* Exam Center Info Section */}
+            {/* Incharge Info Section */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Exam Center Information
+                Incharge Information
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Exam Center Level 1
+                    Incharge Name
                   </label>
                   <input
                     type="text"
-                    {...register("examCenterLevel1")}
+                    {...register("incharge")}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
-                <div>
+                <div className="">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Landmark Level 1
+                    Incharge DOB
                   </label>
                   <input
-                    type="text"
-                    {...register("examCenterLandmarkLevel1")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Exam Center Level 2
-                  </label>
-                  <input
-                    type="text"
-                    {...register("examCenterLevel2")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Landmark Level 2
-                  </label>
-                  <input
-                    type="text"
-                    {...register("examCenterLandmarkLevel2")}
+                    type="date"
+                    {...register("inchargeDob")}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Options Section */}
+            {/* Remark Section */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Additional Options
+                Additional Information
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Show Amount Paid
+                    Remark
                   </label>
-                  <select
-                    {...register("showAmountPaid")}
+                  <textarea
+                    {...register("remark")}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value={1}>Yes</option>
-                    <option value={0}>No</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Show Performance
-                  </label>
-                  <select
-                    {...register("showPerformance")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value={1}>Yes</option>
-                    <option value={0}>No</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Allow Free Download
-                  </label>
-                  <select
-                    {...register("allowFreeDownload")}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="YES">YES</option>
-                    <option value="NO">NO</option>
-                  </select>
+                    rows="4"
+                  ></textarea>
                 </div>
               </div>
             </div>

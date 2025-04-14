@@ -10,12 +10,12 @@ const LoginPage = () => {
   const [batch, setBatch] = useState("2024-25");
   const [mobile, setMobile] = useState("");
   const [formSubmitting, setFormSubmitting] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
     setFormSubmitting(true);
-    setLoading(true)
+    setLoading(true);
     if (!mobile) {
       alert("Please enter your mobile number.");
       setFormSubmitting(false);
@@ -115,8 +115,7 @@ const LoginPage = () => {
               disabled={formSubmitting}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg px-4 py-3 font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group"
             >
-             {formSubmitting ? "Submitting..." : "Login"}
-              <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" />
+              {formSubmitting ? "Logging In..." : "Login"}
             </button>
           </div>
 

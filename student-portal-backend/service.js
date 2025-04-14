@@ -25,7 +25,7 @@ async function fetchDataByMobile(mobNo) {
       return { error: "No student found with this mobile number" };
     }
 
-    const schoolData = await fetchSchoolData(data.schoolCode.toString());
+    const schoolData = await fetchSchoolData(data.schoolCode);
 
     const extractedData = {
       "Roll No": data.rollNo || "Unknown",
