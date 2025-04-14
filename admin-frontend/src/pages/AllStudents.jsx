@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Select from "react-select"; // For multi-select dropdown
+import Select from "react-select";
 import { BASE_URL } from "../Api";
 
 // List of fields that should be treated as booleans ("0" or "1")
@@ -29,14 +29,16 @@ const AllStudents = () => {
   const [updatedData, setUpdatedData] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalStudents, setTotalStudents] = useState(0); // Added for total count
   const [limit] = useState(10);
-  const [isFilterOpen, setIsFilterOpen] = useState(false); // Toggle filter visibility
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [noStudentsFound, setNoStudentsFound] = useState(false);
   const [searchData, setSearchData] = useState({
     studentName: "",
-    classes: [], // Changed to array for multiple classes
-    schoolCode: "",
+    classes: [],
+    schoolCode: null,
     rollNo: "",
-    section: "",
+    sections: [],
     subject: "",
   });
 
@@ -56,6 +58,15 @@ const AllStudents = () => {
     { value: "12", label: "Class 12" },
   ];
 
+  // Predefined section options
+  const sectionOptions = [
+    { value: "A", label: "Section A" },
+    { value: "B", label: "Section B" },
+    { value: "C", label: "Section C" },
+    { value: "D", label: "Section D" },
+    { value: "E", label: "Section E" },
+  ];
+
   useEffect(() => {
     fetchStudents(currentPage);
   }, [currentPage]);
@@ -65,9 +76,10 @@ const AllStudents = () => {
       let res;
       const hasFilters = Object.values(filters).some(
         (val) =>
-          (Array.isArray(val) ? val.length > 0 : val !== "") &&
+          (Array.isArray(val) ? val.length > 0 : val !== "" && val !== null) &&
           val !== undefined
       );
+
       if (hasFilters) {
         res = await axios.post(
           `${BASE_URL}/students?page=${page}&limit=${limit}`,
@@ -77,7 +89,7 @@ const AllStudents = () => {
               : undefined,
             className: filters.classes.length > 0 ? filters.classes : undefined,
             rollNo: filters.rollNo,
-            section: filters.section,
+            section: filters.sections.length > 0 ? filters.sections : undefined,
             studentName: filters.studentName,
             subject: filters.subject,
           }
@@ -90,13 +102,19 @@ const AllStudents = () => {
 
       if (res.data.success) {
         setStudents(hasFilters ? res.data.data : res.data.allStudents);
-        setTotalPages(res.data.totalPages);
+        setTotalPages(res.data.totalPages || 1);
+        setTotalStudents(res.data.totalStudents);
       } else {
         setStudents([]);
-        alert("No students found.");
+        setTotalPages(1);
+        setTotalStudents(0);
+        setNoStudentsFound(true)
       }
     } catch (err) {
       console.error("Failed to fetch students:", err);
+      setStudents([]);
+      setTotalPages(1);
+      setTotalStudents(0);
       alert("Failed to fetch students.");
     } finally {
       setSearched(true);
@@ -114,12 +132,15 @@ const AllStudents = () => {
     });
   };
 
+  const handleSectionChange = (selectedOptions) => {
+    setSearchData({
+      ...searchData,
+      sections: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
+    });
+  };
+
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    if (!searchData.rollNo || !searchData.studentName) {
-      alert("Student Name or Roll No is required");
-      return;
-    }
     setCurrentPage(1);
     await fetchStudents(1, searchData);
   };
@@ -128,9 +149,9 @@ const AllStudents = () => {
     setSearchData({
       studentName: "",
       classes: [],
-      schoolCode: "",
+      schoolCode: null,
       rollNo: "",
-      section: "",
+      sections: [],
       subject: "",
     });
     setSearched(false);
@@ -154,11 +175,10 @@ const AllStudents = () => {
 
   const openUpdateModal = (student) => {
     setSelectedStudent(student);
-    console.log(student);
     const formattedData = {};
     Object.keys(student).forEach((key) => {
       if (booleanFields.includes(key)) {
-        formattedData[key] = student[key] === "1"; // Convert "1" to true, "0" to false
+        formattedData[key] = student[key] === "1";
       } else {
         formattedData[key] = student[key] || "";
       }
@@ -181,7 +201,7 @@ const AllStudents = () => {
       const payload = {};
       Object.keys(updatedData).forEach((key) => {
         if (booleanFields.includes(key)) {
-          payload[key] = updatedData[key] ? "1" : "0"; // Convert true to "1", false to "0"
+          payload[key] = updatedData[key] ? "1" : "0";
         } else {
           payload[key] = updatedData[key];
         }
@@ -274,7 +294,7 @@ const AllStudents = () => {
             >
               <div className="flex-1 min-w-[150px]">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Student Name *
+                  Student Name
                 </label>
                 <input
                   type="text"
@@ -287,7 +307,7 @@ const AllStudents = () => {
               </div>
               <div className="flex-1 min-w-[150px]">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Roll Number *
+                  Roll Number
                 </label>
                 <input
                   type="text"
@@ -329,17 +349,35 @@ const AllStudents = () => {
                   }}
                 />
               </div>
-              <div className="flex-1 min-w-[120px]">
+              <div className="flex-1 min-w-[200px]">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Section
+                  Sections
                 </label>
-                <input
-                  type="text"
-                  name="section"
-                  value={searchData.section}
-                  onChange={handleSearchChange}
-                  className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:ring-1 focus:ring-indigo-500 focus:outline-none text-sm transition duration-150"
-                  placeholder="A"
+                <Select
+                  isMulti
+                  name="sections"
+                  options={sectionOptions}
+                  value={sectionOptions.filter((opt) =>
+                    searchData.sections.includes(opt.value)
+                  )}
+                  onChange={handleSectionChange}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  placeholder="Select sections..."
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      padding: "0.1rem",
+                      borderRadius: "0.375rem",
+                      borderColor: "#d1d5db",
+                      fontSize: "0.875rem",
+                      "&:hover": { borderColor: "#6366f1" },
+                    }),
+                    menu: (base) => ({
+                      ...base,
+                      zIndex: 50,
+                    }),
+                  }}
                 />
               </div>
               <div className="flex-1 min-w-[120px]">
@@ -349,7 +387,7 @@ const AllStudents = () => {
                 <input
                   type="number"
                   name="schoolCode"
-                  value={searchData.schoolCode}
+                  value={searchData.schoolCode || ""}
                   onChange={handleSearchChange}
                   className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:ring-1 focus:ring-indigo-500 focus:outline-none text-sm transition duration-150"
                   placeholder="141"
@@ -500,11 +538,8 @@ const AllStudents = () => {
               <div className="text-sm text-gray-700">
                 Page {currentPage} of {totalPages} | Showing{" "}
                 {(currentPage - 1) * limit + 1} to{" "}
-                {Math.min(
-                  currentPage * limit,
-                  (currentPage - 1) * limit + students.length
-                )}{" "}
-                of {totalPages * limit} students
+                {Math.min(currentPage * limit, totalStudents)} of {totalStudents}{" "}
+                students
               </div>
               <div className="flex space-x-2">
                 <button
