@@ -35,8 +35,20 @@ const Dashboard = () => {
 
   console.log(student);
 
+  // Extract subject prefixes dynamically (e.g., IAOL, IITSTL, IIMOL, IGKOL, IENGOL)
+  const subjects = Array.from(
+    new Set(
+      Object.keys(student || {})
+        .filter((key) => key.match(/^(.*)(L Basic|L Advance|L Basic Book)$/))
+        .map((key) => key.split(" ")[0])
+    )
+  ).map((prefix) => ({
+    prefix,
+    display: prefix, // Use full prefix (e.g., IAOL) instead of shortening
+  }));
+
   return (
-    <div className="flex-1 w-full min-h-screen lg:p-8 p-4 bg-gray-50">
+    <div className="flex-1 w-full min-h-screen lg:p-8 p-4">
       {/* HEADER USER INFO */}
       <div className="flex justify-between items-center mb-8 animate-fade-in">
         <div className="flex items-center gap-4">
@@ -89,14 +101,16 @@ const Dashboard = () => {
             <thead className="bg-gray-100 text-xs uppercase font-semibold">
               <tr>
                 <th className="px-6 py-3 text-left">Level</th>
-                <th className="px-6 py-3 text-left">IAO</th>
-                <th className="px-6 py-3 text-left">ITST</th>
-                <th className="px-6 py-3 text-left">IMO</th>
-                <th className="px-6 py-3 text-left">IGKO</th>
+                {subjects.map((subject, idx) => (
+                  <th key={idx} className="px-6 py-3 text-left">
+                    {subject.display}
+                  </th>
+                ))}
                 <th className="px-6 py-3 text-left">Exam Fee Paid</th>
               </tr>
             </thead>
             <tbody>
+              {/* Basic Level Row */}
               <tr className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200">
                 <td className="px-6 py-4">
                   <div className="flex items-center">
@@ -106,55 +120,25 @@ const Dashboard = () => {
                     <span className="ml-3 font-medium">Basic</span>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      student["IAOL Basic"] === 1
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {student["IAOL Basic"] === 1 ? "Yes" : "Not participated"}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      student["IITSTL Basic"] === 1
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {student["IITSTL Basic"] === 1 ? "Yes" : "Not participated"}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      student["IIMOL Basic"] === 1
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {student["IIMOL Basic"] === 1 ? "Yes" : "Not participated"}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      student["IGKOL Basic"] === 1
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {student["IGKOL Basic"] === 1 ? "Yes" : "Not participated"}
-                  </span>
-                </td>
+                {subjects.map((subject, idx) => (
+                  <td key={idx} className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        student[`${subject.prefix} Basic`] === 1
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {student[`${subject.prefix} Basic`] === 1 ? "Yes" : "Not participated"}
+                    </span>
+                  </td>
+                ))}
                 <td className="px-6 py-4 text-gray-600">
                   Cash: ₹{student["Basic Level Paid Amount"] || "0"}, Online: ₹
                   {student["Basic Level Amount Paid Online"] || "0"}
                 </td>
               </tr>
+              {/* Advance Level Row */}
               <tr className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200">
                 <td className="px-6 py-4">
                   <div className="flex items-center">
@@ -164,40 +148,23 @@ const Dashboard = () => {
                     <span className="ml-3 font-medium">Advance</span>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      student["IAOL Advance"] === 1
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {student["IAOL Advance"] === 1 ? "Yes" : "Not participated"}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      student["IITSTL Advance"] === 1
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {student["IITSTL Advance"] === 1 ? "Yes" : "Not participated"}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      student["IIMOL Advance"] === 1
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {student["IIMOL Advance"] === 1 ? "✓ Qualified" : "Not participated"}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-gray-600">N/A</td>
+                {subjects.map((subject, idx) => (
+                  <td key={idx} className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        student[`${subject.prefix} Advance`] === 1
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {student[`${subject.prefix} Advance`] === 1
+                        ? subject.display === "IIMOL"
+                          ? "✓ Qualified"
+                          : "Yes"
+                        : "Not participated"}
+                    </span>
+                  </td>
+                ))}
                 <td className="px-6 py-4 text-gray-600">
                   Cash: ₹{student["Advance Level Paid Amount"] || "0"}, Online: ₹
                   {student["Advance Level Amount Paid Online"] || "0"}
@@ -214,30 +181,44 @@ const Dashboard = () => {
           <table className="min-w-full text-sm text-gray-700">
             <thead className="bg-gray-100 text-xs uppercase font-semibold">
               <tr>
-                <th className="px-6 py-3 text-left">IAO</th>
-                <th className="px-6 py-3 text-left">ITST</th>
-                <th className="px-6 py-3 text-left">IMO</th>
+                {subjects.map((subject, idx) => (
+                  <th key={idx} className="px-6 py-3 text-left">
+                    {subject.display}
+                  </th>
+                ))}
                 <th className="px-6 py-3 text-left">Status</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-b last:border-b-0 hover:bg-gray-50 transition duration-200">
-                <td className="px-6 py-4 text-gray-600">No</td>
-                <td className="px-6 py-4 text-gray-600">No</td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Yes
-                  </span>
+                {subjects.map((subject, idx) => (
+                  <td key={idx} className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        student[`${subject.prefix} Basic Book`] === 1
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {student[`${subject.prefix} Basic Book`] === 1 ? "Yes" : "No"}
+                    </span>
+                  </td>
+                ))}
+                <td className="px-6 py-4 text-gray-600">
+                  {subjects.some(
+                    (subject) => student[`${subject.prefix} Basic Book`] === 1
+                  ) && student.bookStatus
+                    ? `Delivered on ${student.bookStatus}`
+                    : "Not delivered"}
                 </td>
-                <td className="px-6 py-4 text-gray-600">Delivered on 05 October, 2024</td>
               </tr>
             </tbody>
           </table>
         </div>
       </AccordionSection>
 
-      {/* Special Study Materials Accordion */}
-      <AccordionSection title="Special Study Materials">
+      {/* Special Study Materials Accordion (Commented Out) */}
+      {/* <AccordionSection title="Special Study Materials">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-gray-700">
             <thead className="bg-gray-100 text-xs uppercase font-semibold">
@@ -314,9 +295,12 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-      </AccordionSection>
+      </AccordionSection> */}
     </div>
   );
 };
 
 export default Dashboard;
+
+
+ 

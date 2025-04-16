@@ -12,7 +12,7 @@ import {
 } from "./admitCardService.js";
 import { generateAndUploadDocument, fetchImage } from "./certificateService.js";
 import { fetchStudyMaterial, StudyMaterial } from "./studyMaterialService.js";
-import {excelToMongoDB} from "./excelToMongo.js";
+import { excelToMongoDB } from "./excelToMongo.js";
 import {
   STUDENT_LATEST,
   getStudentsByFilters,
@@ -84,37 +84,42 @@ app.post("/students", async (req, res) => {
   try {
     const { schoolCode, className, rollNo, section, studentName, subject } =
       req.body;
-
-    if (!rollNo || !studentName) {
-      return res.status(400).json({
-        success: false,
-        error: "rollNo and student name are required",
-      });
-    }
+    const { page = 1, limit = 10 } = req.query; // Default to page 1, limit 10
 
     const students = await getStudentsByFilters(
-      Number(schoolCode), // Convert to number
+      schoolCode ? Number(schoolCode) : undefined,
       className,
       rollNo,
       section,
       studentName,
-      subject
+      subject,
+      Number(page),
+      Number(limit)
     );
 
-    if (students.length === 0) {
-      return res.status(204).json({
+    if (students.data.length === 0) {
+      return res.status(200).json({
         success: true,
         message: "No students found matching the criteria",
+        data: [],
+        totalPages: 0,
+        currentPage: Number(page),
+        totalStudents: 0,
       });
     }
 
-    return res.status(200).json({ success: true, data: students });
+    return res.status(200).json({
+      success: true,
+      data: students.data,
+      totalPages: students.totalPages,
+      currentPage: Number(page),
+      totalStudents: students.totalStudents,
+    });
   } catch (error) {
     console.error("❌ Error in route:", error.message);
-    res.status(400).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
-
 // API to update single student
 app.put("/student", async (req, res) => {
   try {
@@ -426,7 +431,8 @@ app.get("/all-students", async (req, res) => {
     const totalPages = Math.ceil(
       (await STUDENT_LATEST.countDocuments()) / limit
     );
-    return res.status(200).json({ allStudents, totalPages, success: true });
+    const totalStudents = await STUDENT_LATEST.countDocuments();
+    return res.status(200).json({ allStudents, totalPages,totalStudents, success: true });
   } catch (error) {
     console.error("❌ Error fetching all students:", error);
     res.status(500).json({ message: "Error fetching all students", error });

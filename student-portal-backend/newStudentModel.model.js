@@ -403,65 +403,97 @@ export const getStudentsByFilters = async (
   rollNo,
   section,
   studentName,
-  subject
+  subject,
+  page = 1,
+  limit = 10
 ) => {
-  const exprConditions = [
-    {
-      $eq: [{ $trim: { input: "$rollNo", chars: " " } }, rollNo.trim()],
-    },
-    {
-      $eq: [
-        { $trim: { input: "$studentName", chars: " " } },
-        studentName.trim(),
-      ],
-    },
-  ];
+  // console.log("School Code - ", schoolCode);
+  // console.log("Class Name - ", className);
+  // console.log("Roll No - ", rollNo);
+  // console.log("Section - ", section);
+  // console.log("Student Name - ", studentName);
+  // console.log("Subject - ", subject);
+  // console.log("Page - ", page);
+  // console.log("Limit - ", limit);
 
+  const matchConditions = [];
+
+  // Roll No (exact match)
+  if (rollNo && rollNo.trim() !== "") {
+    matchConditions.push({
+      rollNo: rollNo.trim(),
+    });
+  }
+
+  // Student Name (case-insensitive partial match)
+  if (studentName && studentName.trim() !== "") {
+    matchConditions.push({
+      studentName: { $regex: studentName.trim(), $options: "i" },
+    });
+  }
+
+  // School Code
   if (schoolCode) {
-    exprConditions.push({
-      $eq: ["$schoolCode", Number(schoolCode)], // Direct number comparison
+    matchConditions.push({
+      schoolCode: { $in: [Number(schoolCode), String(schoolCode)] },
     });
   }
 
-  if (className) {
-    exprConditions.push({
-      $eq: [{ $trim: { input: "$class", chars: " " } }, className.trim()],
+  // Class Name (Array support)
+  if (className && Array.isArray(className) && className.length > 0) {
+    const classVariants = className.flatMap((cls) => {
+      const trimmed = cls.trim();
+      return [trimmed, Number(trimmed)];
+    });
+
+    matchConditions.push({
+      class: { $in: classVariants },
     });
   }
 
-  if (section) {
-    exprConditions.push({
-      $eq: [{ $trim: { input: "$section", chars: " " } }, section.trim()],
+  // Section (Array support)
+  if (section && Array.isArray(section) && section.length > 0) {
+    matchConditions.push({
+      section: { $in: section.map((s) => s.trim()) },
     });
   }
 
-  const matchStage = {};
-
-  if (subject) {
+  // Subject filter
+  if (subject && subject.trim() !== "") {
     const field1 = `${subject}L1`;
     const field2 = `${subject}L2`;
-
-    matchStage.$match = {
-      $and: [
-        {
-          $or: [{ [field1]: 1 }, { [field2]: 1 }],
-        },
-        {
-          $expr: {
-            $and: exprConditions,
-          },
-        },
-      ],
-    };
-  } else {
-    matchStage.$match = {
-      $expr: {
-        $and: exprConditions,
-      },
-    };
+    matchConditions.push({
+      $or: [{ [field1]: { $in: [1, "1"] } }, { [field2]: { $in: [1, "1"] } }],
+    });
   }
 
-  const result = await STUDENT_LATEST.aggregate([matchStage]);
+  // Aggregation pipeline
+  const pipeline = [];
 
-  return result;
+  // Match stage
+  if (matchConditions.length > 0) {
+    pipeline.push({ $match: { $and: matchConditions } });
+  }
+
+  // Count total documents for pagination
+  const countPipeline = [...pipeline, { $count: "totalStudents" }];
+  const countResult = await STUDENT_LATEST.aggregate(countPipeline);
+  const totalStudents =
+    countResult.length > 0 ? countResult[0].totalStudents : 0;
+
+  // Add sorting, pagination stages
+  pipeline.push(
+    { $sort: { studentName: 1 } }, // Optional: sort by studentName
+    { $skip: (page - 1) * limit },
+    { $limit: limit }
+  );
+
+  // Execute the main query
+  const data = await STUDENT_LATEST.aggregate(pipeline);
+
+  return {
+    data,
+    totalStudents,
+    totalPages: Math.ceil(totalStudents / limit),
+  };
 };

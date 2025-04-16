@@ -130,6 +130,7 @@ const schoolSchema = new mongoose.Schema({
   city: String,
   country: String,
   incharge: String,
+  inchargeDob: String,
   schoolMobNo: String,
   principalName: String,
   principalDob: String,
