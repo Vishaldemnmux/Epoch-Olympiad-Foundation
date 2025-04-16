@@ -1,126 +1,11 @@
-// const mongoose = require('mongoose');
-// const XLSX = require('xlsx');
-// const fs = require('fs');
-
-// // // Define School Schema
-// // const schoolSchema = new mongoose.Schema({
-// //     schoolCode: Number,
-// //     schoolName: String,
-// //     schoolMobNo: String,
-// //     schoolEmail: String,
-// //     area: String,
-// //     city: String,
-// //     zone: String,
-// //     state: String,
-// //     country: String,
-// //     principalName: String,
-// //     principalMobNo: String,
-// //     principalDob: String,
-// //     examCenterLevel1: String,
-// //     examCenterLandmarkLevel1: String,
-// //     examCenterLevel2: String,
-// //     examCenterLandmarkLevel2: String,
-// //     showAmountPaid: Number,
-// //     showPerformance: Number,
-// //     allowFreeDownload: String
-// // });
-
-// const schoolSchema = new mongoose.Schema({
-//     schoolCode: Number,
-//     schoolName: String,
-//     schoolMobNo: String,
-//     schoolEmail: String,
-//     incharge: String,
-//     fax: String,
-//     area: String,
-//     city: String,
-//     country: String,
-//     principalName: String,
-//     principalMobNo: String,
-//     principalDob: String,
-//     remark: String,
-//   });
-
-// const School = mongoose.model('School', schoolSchema, "epoch-sample-data");
-
-// // Function to convert XLSX to MongoDB
-// async function convertXlsxToMongo(filePath) {
-//     try {
-//         // Read the Excel file
-//         const workbook = XLSX.readFile(filePath);
-//         const sheetName = workbook.SheetNames[0];
-//         const worksheet = workbook.Sheets[sheetName];
-
-//         // Convert sheet to JSON
-//         const schools = XLSX.utils.sheet_to_json(worksheet, {
-//             header: [
-//                 'schoolCode',
-//                 'schoolName',
-//                 'schoolMobNo',
-//                 'schoolEmail',
-//                 'fax',
-//                 'area',
-//                 'city',
-//                 'incharge',
-//                 'country',
-//                 'principalName',
-//                 'principalMobNo',
-//                 'principalDob',
-//                 'remark'
-//             ],
-//             range: 1 // Skip header row
-//         });
-
-//         // Process the data to handle empty values and data types
-//         const processedSchools = schools.map(school => ({
-//             schoolCode: school.schoolCode ? parseInt(school.schoolCode) : null,
-//             schoolName: school.schoolName || '',
-//             schoolMobNo: school.schoolMobNo || '',
-//             schoolEmail: school.schoolEmail || '',
-//             fax: school.fax || '',
-//             area: school.area || '',
-//             city: school.city || '',
-//             incharge: school.incharge || '',
-//             country: school.country || '',
-//             principalName: school.principalName || '',
-//             principalMobNo: school.principalMobNo || '',
-//             principalDob: school.principalDob || '',
-//             remark: school.remark || ''
-//         }));
-
-//         // Clear existing data (optional)
-//         await School.deleteMany({});
-
-//         // Insert new data
-//         await School.insertMany(processedSchools);
-//         console.log(`Successfully inserted ${processedSchools.length} schools into MongoDB`);
-
-//         // Close connection
-//         mongoose.connection.close();
-
-//     } catch (error) {
-//         console.error('Error processing XLSX file:', error);
-//         mongoose.connection.close();
-//     }
-// }
-
-// // Path to your XLSX file
-// const filePath = './School-Master-Final-CSV.csv';
-
-// // convertXlsxToMongo(filePath);
-
-// module.exports = { convertXlsxToMongo, School };
-
 const mongoose = require("mongoose");
 const XLSX = require("xlsx");
 
-// MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-// Schema
 const schoolSchema = new mongoose.Schema({
   schoolCode: Number,
   schoolName: String,
@@ -140,16 +25,46 @@ const schoolSchema = new mongoose.Schema({
 
 const existingModel = "schools-data";
 
-const School =
-  mongoose.models.existingModel || mongoose.model("schools-data", schoolSchema);
+const School =  mongoose.models.existingModel || mongoose.model("schools-data", schoolSchema);
 
-// Convert Excel to Mongo
+const expectedHeaders = [
+  "School Code",
+  "School Name",
+  "Email Id",
+  "FAX",
+  "Area",
+  "City",
+  "Country",
+  "Incharge",
+  "DOB", 
+  "Mob No.",
+  "Principal Name",
+  "DOB",     
+  "Mob No.",
+  "Remark",
+];
+
+
+function validateSchema(sheetHeaders) {
+  return expectedHeaders.every((header) => sheetHeaders.includes(header));
+}
+
 async function convertXlsxToMongo(filePath) {
   try {
     const workbook = XLSX.readFile(filePath);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+    const data = XLSX.utils.sheet_to_json(sheet, { defval: "", header: 1 });
+    const headers = data[0];
+    if (!validateSchema(headers)) {
+      const message = "❌ Schema does not match. Please upload a valid Excel file.";
+      console.error(message);
+      if (res) {
+        return res.status(400).json({ success: false, error: message });
+      }
+      return;
+    }
 
+    const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: "" });
     const schools = jsonData.map((row) => ({
       schoolCode: row["School Code"] ? parseInt(row["School Code"]) : null,
       schoolName: row["School Name"] || "",
@@ -159,14 +74,14 @@ async function convertXlsxToMongo(filePath) {
       city: row["City"] || "",
       country: row["Country"] || "",
       incharge: row["Incharge"] || "",
+      inchargeDob : row["DOB"],
       schoolMobNo: row["Mob No."] || "",
       principalName: row["Principal Name"] || "",
-      principalDob: row["DOB_1"] || row["DOB"] || "", // fallback
-      principalMobNo: row["Mob No._1"] || "",
+      principalDob:  row["DOB"] || "", 
+      principalMobNo: row["Mob No."] || "",
       remark: row["Remark"] || "",
     }));
 
-    // Clear old data and insert new
     await School.deleteMany({});
     await School.insertMany(schools);
 
@@ -177,9 +92,5 @@ async function convertXlsxToMongo(filePath) {
     mongoose.connection.close();
   }
 }
-
-// // Run the function
-// const filePath = './School-Master-Final.xlsx';
-// convertXlsxToMongo(filePath);
 
 module.exports = { convertXlsxToMongo, School };
